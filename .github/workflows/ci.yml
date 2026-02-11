@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# TODO: Add jobs once the project is scaffolded
+# jobs:
+#   lint:
+#   typecheck:
+#   test:
+#   build:

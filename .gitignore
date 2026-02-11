@@ -1,0 +1,10 @@
+.vscode
+.DS_Store
+node_modules/
+dist/
+.output/
+.vinxi/
+.env
+.env.*
+.claude/settings.local.json
+.playwright-mcp/
