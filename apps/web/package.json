@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "start": "node .output/server/index.mjs",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.75.0",
@@ -20,14 +23,16 @@
     "zod": "^3.24.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^5.1.0",
+    "@vitest/ui": "^4.0.18",
     "tailwindcss": "^4.1.0",
-    "@tailwindcss/vite": "^4.1.0",
     "typescript": "^5.8.0",
     "vite": "^7.3.0",
-    "vite-tsconfig-paths": "^4.3.0"
+    "vite-tsconfig-paths": "^4.3.0",
+    "vitest": "^4.0.18"
   }
 }
