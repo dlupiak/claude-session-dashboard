@@ -13,8 +13,28 @@ export const Route = createFileRoute('/_dashboard/stats')({
   component: StatsPage,
 })
 
+const EMPTY_TOKENS_BY_MODEL: Record<string, TokenUsage> = {}
+
 function StatsPage() {
   const { data: stats, isLoading } = useQuery(statsQuery)
+
+  // Convert stats.modelUsage to Record<string, TokenUsage> for cost calculation
+  // All hooks must be called before any early returns
+  const tokensByModel = useMemo(() => {
+    if (!stats) return EMPTY_TOKENS_BY_MODEL
+    const result: Record<string, TokenUsage> = {}
+    for (const [model, usage] of Object.entries(stats.modelUsage)) {
+      result[model] = {
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        cacheReadInputTokens: usage.cacheReadInputTokens,
+        cacheCreationInputTokens: usage.cacheCreationInputTokens,
+      }
+    }
+    return result
+  }, [stats])
+
+  const { cost } = useSessionCost(tokensByModel)
 
   if (isLoading) {
     return (
@@ -42,22 +62,6 @@ function StatsPage() {
     (sum, m) => sum + m.inputTokens + m.outputTokens,
     0,
   )
-
-  // Convert stats.modelUsage to Record<string, TokenUsage> for cost calculation
-  const tokensByModel = useMemo(() => {
-    const result: Record<string, TokenUsage> = {}
-    for (const [model, usage] of Object.entries(stats.modelUsage)) {
-      result[model] = {
-        inputTokens: usage.inputTokens,
-        outputTokens: usage.outputTokens,
-        cacheReadInputTokens: usage.cacheReadInputTokens,
-        cacheCreationInputTokens: usage.cacheCreationInputTokens,
-      }
-    }
-    return result
-  }, [stats.modelUsage])
-
-  const { cost } = useSessionCost(tokensByModel)
 
   return (
     <div>
