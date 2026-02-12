@@ -140,8 +140,8 @@ Skills are loaded by agents automatically via their config. Key skills:
 
 ## Task Sessions
 
-- `CLAUDE_CODE_TASK_LIST_ID` is set per-branch via the `SessionStart` hook
-- Tasks are scoped to the current feature branch — switching branches starts a fresh task list
+- `CLAUDE_CODE_TASK_LIST_ID` is set to a unique ID per session via the `SessionStart` hook
+- Every Claude Code session gets its own fresh task list
 
 ## Browser Automation
 
