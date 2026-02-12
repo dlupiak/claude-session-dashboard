@@ -27,6 +27,10 @@ Claude Code stores session data locally in `~/.claude/projects/`, but there's no
 
 ![Session Detail](session-detail-full.png)
 
+![Stats Page](stats-page.png)
+
+![Settings Page](settings-page.png)
+
 ## Quick Start
 
 ```bash
