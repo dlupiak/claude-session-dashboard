@@ -15,24 +15,31 @@ arguments:
 
 You are orchestrating the SDLC pipeline for **$ARGUMENTS.story-id**. You are the ORCHESTRATOR — you delegate ALL work to specialized agents via the Task tool. You NEVER write production code, architecture, tests, or reviews yourself.
 
-## Step 1: Architecture (dispatch `architect` agent)
+## Step 1: Interview (dispatch `architect` agent)
 
-Use the Task tool to dispatch the architect agent:
+Before any design work, gather requirements by dispatching the architect agent. It will ask the user clarifying questions using AskUserQuestion.
 
 ```
 Task(
   subagent_type: "architect",
-  description: "Design architecture for $ARGUMENTS.story-id",
-  prompt: "Design the architecture for feature $ARGUMENTS.story-id: $ARGUMENTS.description
+  description: "Gather requirements for $ARGUMENTS.story-id",
+  prompt: "You are gathering requirements for feature $ARGUMENTS.story-id: $ARGUMENTS.description
 
 Read the project CLAUDE.md for context. Explore the codebase to understand current patterns.
-Read any existing designs in docs/designs/.
 
-Produce a design document that includes:
+IMPORTANT: Before designing anything, use AskUserQuestion to interview the user. Ask 2-4 focused questions about:
+- Scope: What exactly should this feature include? What should it NOT include?
+- UX: How should users interact with this? What should it look like?
+- Data: What data is involved? Any new database tables or relationships?
+- Edge cases: What happens on errors, empty states, or unusual inputs?
+- Priority: Which parts are must-have vs nice-to-have?
+
+After getting answers, produce a design document that includes:
 1. What changes are needed and where (affected files/slices)
 2. Data flow (new server functions, queries, UI components)
-3. File structure (new files to create, existing files to modify)
-4. Any risks or trade-offs
+3. Database changes (new tables, columns, migrations, RLS policies)
+4. File structure (new files to create, existing files to modify)
+5. Any risks or trade-offs
 
 Write the design to docs/designs/$ARGUMENTS.story-id.md
 
