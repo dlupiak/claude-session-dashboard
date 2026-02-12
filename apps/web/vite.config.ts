@@ -14,4 +14,9 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
+  test: {
+    globals: true,
+    environment: 'node',
+    setupFiles: [],
+  },
 })

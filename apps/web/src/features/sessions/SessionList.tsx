@@ -1,44 +1,37 @@
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { sessionListQuery, activeSessionsQuery } from './sessions.queries'
+import { useNavigate } from '@tanstack/react-router'
+import { paginatedSessionListQuery, activeSessionsQuery } from './sessions.queries'
 import { SessionCard } from './SessionCard'
 import { SessionFilters } from './SessionFilters'
-import type { SessionSummary } from '@/lib/parsers/types'
+import { PaginationControls } from './PaginationControls'
+import { Route } from '@/routes/_dashboard/sessions/index'
 
 export function SessionList() {
-  const { data: sessions = [], isLoading } = useQuery(sessionListQuery)
+  const navigate = useNavigate()
+  const { page, pageSize, search, status, project } = Route.useSearch()
+
+  const { data: paginatedData, isLoading } = useQuery(
+    paginatedSessionListQuery({ page, pageSize, search, status, project }),
+  )
   const { data: activeSessions = [] } = useQuery(activeSessionsQuery)
 
-  const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'completed'>('all')
-  const [projectFilter, setProjectFilter] = useState('')
-
-  // Merge active status from the fast-polling active query
+  // Merge active session status from the fast-polling query into current page results
   const mergedSessions = useMemo(() => {
+    if (!paginatedData) return []
     const activeIds = new Set(activeSessions.map((s) => s.sessionId))
-    return sessions.map((s) => ({
+    return paginatedData.sessions.map((s) => ({
       ...s,
-      isActive: activeIds.has(s.sessionId),
+      isActive: activeIds.has(s.sessionId) || s.isActive,
     }))
-  }, [sessions, activeSessions])
+  }, [paginatedData, activeSessions])
 
-  const filtered = useMemo(() => {
-    return mergedSessions.filter((s: SessionSummary) => {
-      if (statusFilter === 'active' && !s.isActive) return false
-      if (statusFilter === 'completed' && s.isActive) return false
-      if (projectFilter && s.projectName !== projectFilter) return false
-      if (search) {
-        const q = search.toLowerCase()
-        return (
-          s.projectName.toLowerCase().includes(q) ||
-          s.branch?.toLowerCase().includes(q) ||
-          s.sessionId.toLowerCase().includes(q) ||
-          s.cwd?.toLowerCase().includes(q)
-        )
-      }
-      return true
+  function handlePageChange(newPage: number) {
+    navigate({
+      to: '/sessions',
+      search: (prev) => ({ ...prev, page: newPage }),
     })
-  }, [mergedSessions, search, statusFilter, projectFilter])
+  }
 
   if (isLoading) {
     return (
@@ -53,35 +46,38 @@ export function SessionList() {
     )
   }
 
+  const totalCount = paginatedData?.totalCount ?? 0
+  const totalPages = paginatedData?.totalPages ?? 1
+  const projects = paginatedData?.projects ?? []
+  const activeCount = activeSessions.length
+
   return (
     <div>
-      <SessionFilters
-        sessions={mergedSessions}
-        search={search}
-        onSearchChange={setSearch}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        projectFilter={projectFilter}
-        onProjectFilterChange={setProjectFilter}
-      />
+      <SessionFilters projects={projects} activeCount={activeCount} />
 
       <div className="mt-4 space-y-2">
-        {filtered.length === 0 ? (
+        {mergedSessions.length === 0 ? (
           <div className="py-12 text-center text-sm text-gray-500">
-            {sessions.length === 0
+            {totalCount === 0 && !search && status === 'all' && !project
               ? 'No sessions found in ~/.claude'
               : 'No sessions match your filters'}
           </div>
         ) : (
-          filtered.map((session) => (
+          mergedSessions.map((session) => (
             <SessionCard key={session.sessionId} session={session} />
           ))
         )}
       </div>
 
-      <p className="mt-4 text-xs text-gray-600">
-        {filtered.length} of {sessions.length} sessions
-      </p>
+      <div className="mt-4">
+        <PaginationControls
+          page={paginatedData?.page ?? page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          pageSize={pageSize}
+          onPageChange={handlePageChange}
+        />
+      </div>
     </div>
   )
 }
