@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { sessionDetailQuery } from '@/features/session-detail/session-detail.queries'
-import { SessionTimeline } from '@/features/session-detail/SessionTimeline'
+import { TimelineEventsChart } from '@/features/session-detail/timeline-chart'
 import { ContextWindowPanel } from '@/features/session-detail/ContextWindowPanel'
 import { ToolUsagePanel } from '@/features/session-detail/ToolUsagePanel'
 import { ErrorPanel } from '@/features/session-detail/ErrorPanel'
@@ -121,13 +121,14 @@ function SessionDetailPage() {
 
       <ErrorPanel errors={detail.errors} />
 
-      {/* Timeline */}
+      {/* Timeline Events Chart */}
       <div className="mt-6">
         <h2 className="mb-3 text-sm font-semibold text-gray-300">Timeline</h2>
-        <SessionTimeline
+        <TimelineEventsChart
           turns={detail.turns}
           agents={detail.agents}
           skills={detail.skills}
+          errors={detail.errors}
         />
       </div>
 
