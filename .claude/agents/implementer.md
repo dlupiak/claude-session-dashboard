@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements approved architecture using TanStack Start, React, TypeScript, and Supabase. Writes production code slice-by-slice.
+description: Use proactively when user asks to implement, build, add, create, or fix code. Writes production TypeScript/React code using TanStack Start and Supabase. Implements slice-by-slice and runs typecheck after each change.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: opus
 maxTurns: 50

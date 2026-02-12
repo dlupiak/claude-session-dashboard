@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Read-only code reviewer that checks changes against project standards and security best practices.
+description: Use proactively when user asks to review code, check changes, or validate implementation quality. Read-only code reviewer — checks TypeScript, React patterns, architecture compliance, and security best practices.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 disallowedTools: Write, Edit, Bash
 model: sonnet

@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Writes tests, runs linting, detects edge cases. Ensures code meets quality standards before PR.
+description: Use proactively when user asks to write tests, add test coverage, or check edge cases. Writes Vitest unit tests and Playwright E2E tests. Runs linting, type checking, and detects edge cases.
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 maxTurns: 40

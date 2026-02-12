@@ -1,6 +1,6 @@
 ---
 name: devops
-description: Manages CI/CD pipelines, GitHub Actions workflows, PR automation, and deployment configuration.
+description: Use proactively when user asks about CI/CD, GitHub Actions, deployment, or infrastructure. Manages pipelines, workflows, PR automation, and deployment configuration.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
 maxTurns: 20

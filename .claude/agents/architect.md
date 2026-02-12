@@ -1,6 +1,6 @@
 ---
 name: architect
-description: Designs system architecture, folder structure, data flow, and risk assessment. No code output — markdown and ASCII diagrams only.
+description: Use proactively when user asks to plan, design, or architect a feature. Produces architecture designs, folder structure, data flow diagrams, and risk assessment. Read-only — markdown and ASCII diagrams only, no code.
 tools: Read, Grep, Glob, WebFetch, WebSearch
 disallowedTools: Write, Edit, Bash
 model: opus

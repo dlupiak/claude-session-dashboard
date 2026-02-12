@@ -1,6 +1,6 @@
 ---
 name: product-owner
-description: Analyzes change requests, asks clarifying questions, and creates well-structured GitHub issues with acceptance criteria.
+description: Use proactively when user asks to create an issue, write a ticket, or define requirements. Analyzes change requests, asks clarifying questions, and creates well-structured GitHub issues with acceptance criteria.
 tools: Read, Grep, Glob, Bash, WebFetch, WebSearch, AskUserQuestion
 disallowedTools: Write, Edit
 model: opus
