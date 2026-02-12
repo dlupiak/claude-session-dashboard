@@ -1,9 +1,12 @@
+import { VALID_SIZES } from './usePageSizePreference'
+
 interface PaginationControlsProps {
   page: number
   totalPages: number
   totalCount: number
   pageSize: number
   onPageChange: (page: number) => void
+  onPageSizeChange: (size: number) => void
 }
 
 export function PaginationControls({
@@ -12,65 +15,83 @@ export function PaginationControls({
   totalCount,
   pageSize,
   onPageChange,
+  onPageSizeChange,
 }: PaginationControlsProps) {
-  if (totalPages <= 1) return null
+  if (totalCount === 0) return null
 
   const start = (page - 1) * pageSize + 1
   const end = Math.min(page * pageSize, totalCount)
 
-  const pageNumbers = buildPageNumbers(page, totalPages)
+  const showNavigation = totalPages > 1
+  const pageNumbers = showNavigation ? buildPageNumbers(page, totalPages) : []
 
   return (
     <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
-      <p className="text-xs text-gray-400">
-        Showing{' '}
-        <span className="font-mono text-gray-300">
-          {start}-{end}
-        </span>{' '}
-        of{' '}
-        <span className="font-mono text-gray-300">{totalCount}</span> sessions
-      </p>
-
-      <div className="flex items-center gap-1">
-        <button
-          onClick={() => onPageChange(page - 1)}
-          disabled={page <= 1}
-          className="rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-800 disabled:hover:text-gray-400"
+      <div className="flex items-center gap-3">
+        <select
+          value={pageSize}
+          onChange={(e) => onPageSizeChange(Number(e.target.value))}
+          className="rounded-lg border border-gray-700 bg-gray-800/50 px-2 py-1 text-xs text-gray-200 outline-none focus:border-blue-500"
         >
-          Previous
-        </button>
+          {VALID_SIZES.map((size) => (
+            <option key={size} value={size}>
+              {size} / page
+            </option>
+          ))}
+        </select>
 
-        {pageNumbers.map((item, i) =>
-          item === 'ellipsis' ? (
-            <span
-              key={`ellipsis-${i}`}
-              className="px-1.5 text-xs text-gray-500"
-            >
-              ...
-            </span>
-          ) : (
-            <button
-              key={item}
-              onClick={() => onPageChange(item)}
-              className={`min-w-[2rem] rounded-lg px-2 py-1.5 text-xs font-mono transition-colors ${
-                item === page
-                  ? 'bg-blue-600 text-white'
-                  : 'border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
-              }`}
-            >
-              {item}
-            </button>
-          ),
-        )}
-
-        <button
-          onClick={() => onPageChange(page + 1)}
-          disabled={page >= totalPages}
-          className="rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-800 disabled:hover:text-gray-400"
-        >
-          Next
-        </button>
+        <p className="text-xs text-gray-400">
+          Showing{' '}
+          <span className="font-mono text-gray-300">
+            {start}-{end}
+          </span>{' '}
+          of{' '}
+          <span className="font-mono text-gray-300">{totalCount}</span> sessions
+        </p>
       </div>
+
+      {showNavigation && (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onPageChange(page - 1)}
+            disabled={page <= 1}
+            className="rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-800 disabled:hover:text-gray-400"
+          >
+            Previous
+          </button>
+
+          {pageNumbers.map((item, i) =>
+            item === 'ellipsis' ? (
+              <span
+                key={`ellipsis-${i}`}
+                className="px-1.5 text-xs text-gray-500"
+              >
+                ...
+              </span>
+            ) : (
+              <button
+                key={item}
+                onClick={() => onPageChange(item)}
+                className={`min-w-[2rem] rounded-lg px-2 py-1.5 text-xs font-mono transition-colors ${
+                  item === page
+                    ? 'bg-blue-600 text-white'
+                    : 'border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                }`}
+              >
+                {item}
+              </button>
+            ),
+          )}
+
+          <button
+            onClick={() => onPageChange(page + 1)}
+            disabled={page >= totalPages}
+            className="rounded-lg border border-gray-700 bg-gray-800 px-2.5 py-1.5 text-xs text-gray-400 transition-colors hover:bg-gray-700 hover:text-gray-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-800 disabled:hover:text-gray-400"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -17,7 +17,7 @@ export const getActiveSessionList = createServerFn({ method: 'GET' }).handler(
 
 const paginatedSessionsInputSchema = z.object({
   page: z.number().int().min(1),
-  pageSize: z.number().int().min(10).max(100),
+  pageSize: z.number().int().min(5).max(100),
   search: z.string(),
   status: z.enum(['all', 'active', 'completed']),
   project: z.string(),

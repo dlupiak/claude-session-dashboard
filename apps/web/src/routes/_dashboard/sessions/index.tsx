@@ -4,7 +4,7 @@ import { SessionList } from '@/features/sessions/SessionList'
 
 const sessionsSearchSchema = z.object({
   page: z.number().int().min(1).default(1).catch(1),
-  pageSize: z.number().int().min(10).max(100).default(25).catch(25),
+  pageSize: z.number().int().min(5).max(100).default(5).catch(5),
   search: z.string().default('').catch(''),
   status: z.enum(['all', 'active', 'completed']).default('all').catch('all'),
   project: z.string().default('').catch(''),

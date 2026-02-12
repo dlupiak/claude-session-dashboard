@@ -1,15 +1,36 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { paginatedSessionListQuery, activeSessionsQuery } from './sessions.queries'
 import { SessionCard } from './SessionCard'
 import { SessionFilters } from './SessionFilters'
 import { PaginationControls } from './PaginationControls'
+import { usePageSizePreference } from './usePageSizePreference'
 import { Route } from '@/routes/_dashboard/sessions/index'
 
 export function SessionList() {
   const navigate = useNavigate()
   const { page, pageSize, search, status, project } = Route.useSearch()
+  const { storedPageSize, setPageSize } = usePageSizePreference()
+  const hasAppliedStoredPreference = useRef(false)
+
+  // On mount, if localStorage has a preference that differs from the URL default,
+  // apply it (only once, and only if URL doesn't already have an explicit pageSize).
+  // Priority: explicit URL param > localStorage preference > schema default (5)
+  useEffect(() => {
+    if (
+      storedPageSize !== null &&
+      !hasAppliedStoredPreference.current &&
+      storedPageSize !== pageSize
+    ) {
+      hasAppliedStoredPreference.current = true
+      navigate({
+        to: '/sessions',
+        search: (prev) => ({ ...prev, pageSize: storedPageSize, page: 1 }),
+        replace: true,
+      })
+    }
+  }, [storedPageSize, pageSize, navigate])
 
   const { data: paginatedData, isLoading } = useQuery(
     paginatedSessionListQuery({ page, pageSize, search, status, project }),
@@ -33,10 +54,18 @@ export function SessionList() {
     })
   }
 
+  function handlePageSizeChange(newSize: number) {
+    setPageSize(newSize)
+    navigate({
+      to: '/sessions',
+      search: (prev) => ({ ...prev, pageSize: newSize, page: 1 }),
+    })
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-3">
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: pageSize }).map((_, i) => (
           <div
             key={i}
             className="h-28 animate-pulse rounded-xl border border-gray-800 bg-gray-900/50"
@@ -76,6 +105,7 @@ export function SessionList() {
           totalCount={totalCount}
           pageSize={pageSize}
           onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
       </div>
     </div>
