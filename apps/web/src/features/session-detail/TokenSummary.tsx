@@ -2,9 +2,9 @@ import type { TokenUsage } from '@/lib/parsers/types'
 import { formatTokenCount } from '@/lib/utils/format'
 
 export function TokenSummary({ tokens }: { tokens: TokenUsage }) {
-  const total =
-    tokens.inputTokens +
-    tokens.outputTokens +
+  const activeTotal = tokens.inputTokens + tokens.outputTokens
+  const allTotal =
+    activeTotal +
     tokens.cacheReadInputTokens +
     tokens.cacheCreationInputTokens
 
@@ -27,7 +27,10 @@ export function TokenSummary({ tokens }: { tokens: TokenUsage }) {
     <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
       <h3 className="text-sm font-semibold text-gray-300">Token Usage</h3>
       <p className="mt-1 text-2xl font-bold text-white">
-        {formatTokenCount(total)}
+        {formatTokenCount(activeTotal)}
+      </p>
+      <p className="text-[10px] text-gray-500">
+        input + output ({formatTokenCount(allTotal)} incl. cache)
       </p>
 
       <div className="mt-3 space-y-2">
@@ -42,7 +45,7 @@ export function TokenSummary({ tokens }: { tokens: TokenUsage }) {
       </div>
 
       {/* Visual bar */}
-      {total > 0 && (
+      {allTotal > 0 && (
         <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-gray-800">
           {items
             .filter((i) => i.value > 0)
@@ -50,7 +53,7 @@ export function TokenSummary({ tokens }: { tokens: TokenUsage }) {
               <div
                 key={item.label}
                 className={`${item.color.replace('text-', 'bg-')} opacity-60`}
-                style={{ width: `${(item.value / total) * 100}%` }}
+                style={{ width: `${(item.value / allTotal) * 100}%` }}
               />
             ))}
         </div>

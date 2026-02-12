@@ -9,7 +9,10 @@ import type {
   SessionError,
   AgentInvocation,
   SkillInvocation,
+  TaskItem,
   RawJsonlMessage,
+  ContextWindowSnapshot,
+  ContextWindowData,
 } from './types'
 
 const HEAD_LINES = 15
@@ -108,6 +111,7 @@ export async function parseDetail(
   const errors: SessionError[] = []
   const agents: AgentInvocation[] = []
   const skills: SkillInvocation[] = []
+  const tasks: TaskItem[] = []
   const modelsSet = new Set<string>()
   let branch: string | null = null
   const totalTokens: TokenUsage = {
@@ -117,6 +121,19 @@ export async function parseDetail(
     cacheCreationInputTokens: 0,
   }
 
+  // Maps for linking agent stats
+  const agentByToolUseId = new Map<string, AgentInvocation>()
+  const agentProgressTokens = new Map<string, TokenUsage>()
+  const agentProgressToolCalls = new Map<string, Record<string, number>>()
+
+  // Map for linking TaskCreate tool_use_id to pending task
+  const pendingTaskByToolUseId = new Map<string, TaskItem>()
+  const taskById = new Map<string, TaskItem>()
+
+  // Context window tracking
+  const contextSnapshots: ContextWindowSnapshot[] = []
+  let assistantTurnIndex = 0
+
   const stream = fs.createReadStream(filePath, { encoding: 'utf-8' })
   const rl = readline.createInterface({ input: stream, crlfDelay: Infinity })
 
@@ -125,6 +142,38 @@ export async function parseDetail(
     if (!msg || msg.type === 'file-history-snapshot') continue
 
     if (msg.gitBranch && !branch) branch = msg.gitBranch
+
+    // Track agent progress messages
+    if (msg.type === 'progress' && msg.parentToolUseID) {
+      const parentId = msg.parentToolUseID
+      const usage = msg.data?.message?.message?.usage
+      if (usage) {
+        const existing = agentProgressTokens.get(parentId) ?? {
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheReadInputTokens: 0,
+          cacheCreationInputTokens: 0,
+        }
+        existing.inputTokens += usage.input_tokens ?? 0
+        existing.outputTokens += usage.output_tokens ?? 0
+        existing.cacheReadInputTokens += usage.cache_read_input_tokens ?? 0
+        existing.cacheCreationInputTokens += usage.cache_creation_input_tokens ?? 0
+        agentProgressTokens.set(parentId, existing)
+      }
+
+      // Track tool calls within agent progress
+      const content = msg.data?.message?.message?.content
+      if (Array.isArray(content)) {
+        const toolMap = agentProgressToolCalls.get(parentId) ?? {}
+        for (const block of content) {
+          if (block.type === 'tool_use' && block.name) {
+            toolMap[block.name] = (toolMap[block.name] ?? 0) + 1
+          }
+        }
+        agentProgressToolCalls.set(parentId, toolMap)
+      }
+      continue
+    }
 
     const toolCalls: ToolCall[] = []
 
@@ -143,11 +192,15 @@ export async function parseDetail(
           if (block.name === 'Task' && block.input) {
             const inp = block.input as Record<string, unknown>
             if (inp.subagent_type) {
-              agents.push({
+              const agent: AgentInvocation = {
                 subagentType: String(inp.subagent_type),
                 description: String(inp.description ?? ''),
                 timestamp: msg.timestamp ?? '',
-              })
+                toolUseId: block.id ?? '',
+                model: inp.model ? String(inp.model) : undefined,
+              }
+              agents.push(agent)
+              if (block.id) agentByToolUseId.set(block.id, agent)
             }
           }
 
@@ -159,7 +212,33 @@ export async function parseDetail(
                 skill: String(inp.skill),
                 args: inp.args ? String(inp.args) : null,
                 timestamp: msg.timestamp ?? '',
+                toolUseId: block.id ?? '',
               })
+            }
+          }
+
+          // Extract TaskCreate
+          if (block.name === 'TaskCreate' && block.input) {
+            const inp = block.input as Record<string, unknown>
+            const task: TaskItem = {
+              taskId: '',
+              subject: String(inp.subject ?? ''),
+              description: inp.description ? String(inp.description) : undefined,
+              activeForm: inp.activeForm ? String(inp.activeForm) : undefined,
+              status: 'pending',
+              timestamp: msg.timestamp ?? '',
+            }
+            tasks.push(task)
+            if (block.id) pendingTaskByToolUseId.set(block.id, task)
+          }
+
+          // Extract TaskUpdate
+          if (block.name === 'TaskUpdate' && block.input) {
+            const inp = block.input as Record<string, unknown>
+            const taskId = String(inp.taskId ?? '')
+            const existing = taskById.get(taskId)
+            if (existing && inp.status) {
+              existing.status = String(inp.status) as TaskItem['status']
             }
           }
         }
@@ -180,6 +259,22 @@ export async function parseDetail(
         totalTokens.cacheReadInputTokens += tokens.cacheReadInputTokens
         totalTokens.cacheCreationInputTokens += tokens.cacheCreationInputTokens
 
+        // Track context window snapshot
+        const contextSize =
+          tokens.inputTokens +
+          tokens.cacheReadInputTokens +
+          tokens.cacheCreationInputTokens
+        const lastSnapshot = contextSnapshots[contextSnapshots.length - 1]
+        if (!lastSnapshot || lastSnapshot.contextSize !== contextSize) {
+          contextSnapshots.push({
+            turnIndex: assistantTurnIndex,
+            timestamp: msg.timestamp ?? '',
+            contextSize,
+            outputTokens: tokens.outputTokens,
+          })
+        }
+        assistantTurnIndex++
+
         turns.push({
           uuid: msg.uuid ?? '',
           type: msg.type,
@@ -190,6 +285,42 @@ export async function parseDetail(
           stopReason: msg.message.stop_reason,
         })
         continue
+      }
+    }
+
+    // Handle tool_result messages (user type with tool results)
+    if (msg.type === 'user' && msg.message?.content) {
+      const content = msg.message.content
+      if (Array.isArray(content)) {
+        for (const block of content) {
+          if (block.type !== 'tool_result') continue
+          const toolUseId = block.tool_use_id ?? block.id
+          // Extract text from tool_result content (can be string or array)
+          const resultText = extractToolResultText(block)
+
+          // Extract task ID from TaskCreate results
+          if (resultText) {
+            const taskMatch = resultText.match(/Task #(\S+) created successfully/)
+            if (taskMatch && toolUseId) {
+              const pending = pendingTaskByToolUseId.get(String(toolUseId))
+              if (pending) {
+                pending.taskId = taskMatch[1]
+                taskById.set(pending.taskId, pending)
+              }
+            }
+          }
+
+          // Extract agent completion stats from toolUseResult
+          if (msg.toolUseResult && toolUseId) {
+            const agent = agentByToolUseId.get(String(toolUseId))
+            if (agent) {
+              const result = msg.toolUseResult
+              if (result.totalTokens) agent.totalTokens = result.totalTokens
+              if (result.totalToolUseCount) agent.totalToolUseCount = result.totalToolUseCount
+              if (result.totalDurationMs) agent.durationMs = result.totalDurationMs
+            }
+          }
+        }
       }
     }
 
@@ -214,6 +345,25 @@ export async function parseDetail(
     }
   }
 
+  // Merge accumulated progress stats into agents
+  for (const agent of agents) {
+    const progressTokens = agentProgressTokens.get(agent.toolUseId)
+    if (progressTokens && !agent.tokens) {
+      agent.tokens = progressTokens
+    }
+    const progressTools = agentProgressToolCalls.get(agent.toolUseId)
+    if (progressTools && !agent.toolCalls) {
+      agent.toolCalls = progressTools
+    }
+  }
+
+  // Build context window data
+  const modelName = modelsSet.size > 0 ? Array.from(modelsSet)[0] : 'unknown'
+  const contextWindow = buildContextWindowData(
+    contextSnapshots,
+    modelName,
+  )
+
   return {
     sessionId,
     projectPath,
@@ -226,6 +376,8 @@ export async function parseDetail(
     models: Array.from(modelsSet),
     agents,
     skills,
+    tasks,
+    contextWindow,
   }
 }
 
@@ -261,6 +413,39 @@ export async function readSessionMessages(
   }
 
   return { messages, total }
+}
+
+// --- Context window helpers ---
+
+function getContextLimit(_modelName: string): number {
+  return 200_000
+}
+
+function buildContextWindowData(
+  snapshots: ContextWindowSnapshot[],
+  modelName: string,
+): ContextWindowData | null {
+  if (snapshots.length === 0) return null
+
+  const contextLimit = getContextLimit(modelName)
+  const autocompactBuffer = Math.round(contextLimit * 0.165)
+  const systemOverhead = snapshots[0].contextSize
+  const currentContextSize = snapshots[snapshots.length - 1].contextSize
+  const messagesEstimate = Math.max(0, currentContextSize - systemOverhead)
+  const freeSpace = Math.max(0, contextLimit - currentContextSize)
+  const usagePercent = Math.round((currentContextSize / contextLimit) * 100)
+
+  return {
+    contextLimit,
+    modelName,
+    systemOverhead,
+    currentContextSize,
+    messagesEstimate,
+    freeSpace,
+    autocompactBuffer,
+    usagePercent,
+    snapshots,
+  }
 }
 
 // --- Helpers ---
@@ -309,6 +494,22 @@ function safeParse(line: string): RawJsonlMessage | null {
   } catch {
     return null
   }
+}
+
+function extractToolResultText(block: {
+  text?: string
+  content?: string | Array<{ type: string; text?: string }>
+}): string | undefined {
+  // tool_result text can be in block.text (legacy) or block.content (actual format)
+  if (block.text) return block.text
+  if (typeof block.content === 'string') return block.content
+  if (Array.isArray(block.content)) {
+    const texts = block.content
+      .filter((b) => b.type === 'text' && b.text)
+      .map((b) => b.text!)
+    return texts.length > 0 ? texts.join('\n') : undefined
+  }
+  return undefined
 }
 
 function extractTextContent(msg: RawJsonlMessage): string | undefined {

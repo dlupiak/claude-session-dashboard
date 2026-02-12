@@ -50,12 +50,48 @@ export interface AgentInvocation {
   subagentType: string
   description: string
   timestamp: string
+  toolUseId: string
+  tokens?: TokenUsage
+  totalTokens?: number
+  totalToolUseCount?: number
+  durationMs?: number
+  model?: string
+  toolCalls?: Record<string, number>
 }
 
 export interface SkillInvocation {
   skill: string
   args: string | null
   timestamp: string
+  toolUseId: string
+}
+
+export interface TaskItem {
+  taskId: string
+  subject: string
+  description?: string
+  activeForm?: string
+  status: 'pending' | 'in_progress' | 'completed' | 'deleted'
+  timestamp: string
+}
+
+export interface ContextWindowSnapshot {
+  turnIndex: number
+  timestamp: string
+  contextSize: number
+  outputTokens: number
+}
+
+export interface ContextWindowData {
+  contextLimit: number
+  modelName: string
+  systemOverhead: number
+  currentContextSize: number
+  messagesEstimate: number
+  freeSpace: number
+  autocompactBuffer: number
+  usagePercent: number
+  snapshots: ContextWindowSnapshot[]
 }
 
 export interface SessionDetail {
@@ -70,6 +106,8 @@ export interface SessionDetail {
   models: string[]
   agents: AgentInvocation[]
   skills: SkillInvocation[]
+  tasks: TaskItem[]
+  contextWindow: ContextWindowData | null
 }
 
 export interface SessionError {
@@ -158,6 +196,9 @@ export interface RawJsonlMessage {
       name?: string
       id?: string
       input?: unknown
+      // tool_result fields
+      tool_use_id?: string
+      content?: string | Array<{ type: string; text?: string }>
     }>
     usage?: {
       input_tokens?: number
@@ -169,6 +210,25 @@ export interface RawJsonlMessage {
   }
   data?: {
     type?: string
+    message?: {
+      type?: string
+      message?: {
+        content?: Array<{ type: string; name?: string; id?: string; input?: unknown }>
+        usage?: {
+          input_tokens?: number
+          output_tokens?: number
+          cache_read_input_tokens?: number
+          cache_creation_input_tokens?: number
+        }
+      }
+    }
+  }
+  parentToolUseID?: string
+  toolUseResult?: {
+    totalTokens?: number
+    totalToolUseCount?: number
+    totalDurationMs?: number
+    agentId?: string
   }
   slug?: string
   subtype?: string

@@ -2,10 +2,11 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { sessionDetailQuery } from '@/features/session-detail/session-detail.queries'
 import { SessionTimeline } from '@/features/session-detail/SessionTimeline'
-import { TokenSummary } from '@/features/session-detail/TokenSummary'
+import { ContextWindowPanel } from '@/features/session-detail/ContextWindowPanel'
 import { ToolUsagePanel } from '@/features/session-detail/ToolUsagePanel'
 import { ErrorPanel } from '@/features/session-detail/ErrorPanel'
 import { AgentsSkillsPanel } from '@/features/session-detail/AgentsSkillsPanel'
+import { TasksPanel } from '@/features/session-detail/TasksPanel'
 import { RawLogViewer } from '@/features/session-detail/RawLogViewer'
 import { formatDuration, formatDateTime } from '@/lib/utils/format'
 import { z } from 'zod'
@@ -101,7 +102,7 @@ function SessionDetailPage() {
 
       {/* Stats grid */}
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <TokenSummary tokens={detail.totalTokens} />
+        <ContextWindowPanel contextWindow={detail.contextWindow} tokens={detail.totalTokens} />
         <ToolUsagePanel toolFrequency={detail.toolFrequency} />
       </div>
 
@@ -112,12 +113,23 @@ function SessionDetailPage() {
         </div>
       )}
 
+      {/* Tasks */}
+      {detail.tasks.length > 0 && (
+        <div className="mt-4">
+          <TasksPanel tasks={detail.tasks} />
+        </div>
+      )}
+
       <ErrorPanel errors={detail.errors} />
 
       {/* Timeline */}
       <div className="mt-6">
         <h2 className="mb-3 text-sm font-semibold text-gray-300">Timeline</h2>
-        <SessionTimeline turns={detail.turns} />
+        <SessionTimeline
+          turns={detail.turns}
+          agents={detail.agents}
+          skills={detail.skills}
+        />
       </div>
 
       {/* Raw log */}
