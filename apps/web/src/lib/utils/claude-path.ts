@@ -21,8 +21,8 @@ export function getHistoryPath(): string {
 
 /**
  * Decode a project directory name back to a filesystem path.
- * ~/.claude/projects stores dirs like "-Users-dmytro-Documents-GitHub-foo"
- * which maps to "/Users/dmytro/Documents/GitHub/foo"
+ * ~/.claude/projects stores dirs like "-Users-username-Documents-GitHub-foo"
+ * which maps to "/Users/username/Documents/GitHub/foo"
  */
 export function decodeProjectDirName(dirName: string): string {
   // Replace leading dash with / and all other dashes with /
@@ -31,7 +31,7 @@ export function decodeProjectDirName(dirName: string): string {
 
 /**
  * Extract a short project name from a decoded path.
- * "/Users/dmytro/Documents/GitHub/myproject" -> "myproject"
+ * "/Users/username/Documents/GitHub/myproject" -> "myproject"
  */
 export function extractProjectName(decodedPath: string): string {
   return path.basename(decodedPath)

@@ -21,7 +21,7 @@ Users want to share screenshots without exposing real filesystem paths, username
 
 | Data | Raw | Anonymized |
 |------|-----|-----------|
-| Paths | `/Users/dmytro/Documents/GitHub/my-project` | `/Users/user/Documents/GitHub/my-project` |
+| Paths | `/Users/username/Documents/GitHub/my-project` | `/Users/user/Documents/GitHub/my-project` |
 | Project names | `my-project` | `project-1` (stable alphabetical index) |
 | Branch names | unchanged | unchanged (not sensitive) |
 | Session IDs, timestamps, tokens | unchanged | unchanged |
