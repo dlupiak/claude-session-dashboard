@@ -14,9 +14,6 @@ export default defineConfig({
     viteReact(),
     tailwindcss(),
   ],
-  test: {
-    globals: true,
-    environment: 'node',
-    setupFiles: [],
-  },
+  // Test config is in vitest.config.ts (separate from app config to avoid
+  // tanstackStart/viteReact plugins interfering with React module resolution in tests)
 })

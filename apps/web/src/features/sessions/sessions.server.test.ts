@@ -400,6 +400,50 @@ describe('paginateAndFilterSessions', () => {
       expect(result.totalPages).toBe(1)
       expect(result.page).toBe(1)
     })
+
+    it('should accept pageSize of 5 (new minimum)', async () => {
+      const sessions = Array.from({ length: 12 }, (_, i) =>
+        createMockSession({ sessionId: `session-${i}` }),
+      )
+
+      const page1 = await paginateAndFilterSessions(sessions, {
+        page: 1,
+        pageSize: 5,
+        search: '',
+        status: 'all',
+        project: '',
+      })
+
+      expect(page1.sessions).toHaveLength(5)
+      expect(page1.sessions[0].sessionId).toBe('session-0')
+      expect(page1.sessions[4].sessionId).toBe('session-4')
+      expect(page1.totalCount).toBe(12)
+      expect(page1.totalPages).toBe(3)
+
+      const page2 = await paginateAndFilterSessions(sessions, {
+        page: 2,
+        pageSize: 5,
+        search: '',
+        status: 'all',
+        project: '',
+      })
+
+      expect(page2.sessions).toHaveLength(5)
+      expect(page2.sessions[0].sessionId).toBe('session-5')
+      expect(page2.sessions[4].sessionId).toBe('session-9')
+
+      const page3 = await paginateAndFilterSessions(sessions, {
+        page: 3,
+        pageSize: 5,
+        search: '',
+        status: 'all',
+        project: '',
+      })
+
+      expect(page3.sessions).toHaveLength(2)
+      expect(page3.sessions[0].sessionId).toBe('session-10')
+      expect(page3.sessions[1].sessionId).toBe('session-11')
+    })
   })
 
   describe('edge cases', () => {
