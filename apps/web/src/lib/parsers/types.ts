@@ -36,7 +36,7 @@ export interface Turn {
 export interface ToolCall {
   toolName: string
   toolUseId: string
-  input?: unknown
+  input?: Record<string, any>
 }
 
 export interface TokenUsage {
@@ -195,7 +195,7 @@ export interface RawJsonlMessage {
       text?: string
       name?: string
       id?: string
-      input?: unknown
+      input?: Record<string, any>
       // tool_result fields
       tool_use_id?: string
       content?: string | Array<{ type: string; text?: string }>
@@ -213,7 +213,7 @@ export interface RawJsonlMessage {
     message?: {
       type?: string
       message?: {
-        content?: Array<{ type: string; name?: string; id?: string; input?: unknown }>
+        content?: Array<{ type: string; name?: string; id?: string; input?: Record<string, any> }>
         usage?: {
           input_tokens?: number
           output_tokens?: number
