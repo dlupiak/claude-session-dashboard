@@ -120,6 +120,7 @@ export async function parseDetail(
     cacheReadInputTokens: 0,
     cacheCreationInputTokens: 0,
   }
+  const tokensByModel: Record<string, TokenUsage> = {}
 
   // Maps for linking agent stats
   const agentByToolUseId = new Map<string, AgentInvocation>()
@@ -259,6 +260,22 @@ export async function parseDetail(
         totalTokens.cacheReadInputTokens += tokens.cacheReadInputTokens
         totalTokens.cacheCreationInputTokens += tokens.cacheCreationInputTokens
 
+        // Track per-model token usage
+        if (msg.message.model) {
+          const modelId = msg.message.model
+          const existing = tokensByModel[modelId] ?? {
+            inputTokens: 0,
+            outputTokens: 0,
+            cacheReadInputTokens: 0,
+            cacheCreationInputTokens: 0,
+          }
+          existing.inputTokens += tokens.inputTokens
+          existing.outputTokens += tokens.outputTokens
+          existing.cacheReadInputTokens += tokens.cacheReadInputTokens
+          existing.cacheCreationInputTokens += tokens.cacheCreationInputTokens
+          tokensByModel[modelId] = existing
+        }
+
         // Track context window snapshot
         const contextSize =
           tokens.inputTokens +
@@ -371,6 +388,7 @@ export async function parseDetail(
     branch,
     turns,
     totalTokens,
+    tokensByModel,
     toolFrequency,
     errors,
     models: Array.from(modelsSet),

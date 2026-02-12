@@ -101,6 +101,7 @@ export interface SessionDetail {
   branch: string | null
   turns: Turn[]
   totalTokens: TokenUsage
+  tokensByModel: Record<string, TokenUsage>
   toolFrequency: Record<string, number>
   errors: SessionError[]
   models: string[]
