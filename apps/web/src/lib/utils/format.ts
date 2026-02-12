@@ -47,3 +47,10 @@ export function formatBytes(bytes: number): string {
   }
   return `${bytes} B`
 }
+
+export function formatUSD(amount: number): string {
+  if (!Number.isFinite(amount)) return '$0.00'
+  if (amount < 0.005) return '<$0.01'
+  if (amount >= 100) return `$${Math.round(amount)}`
+  return `$${amount.toFixed(2)}`
+}

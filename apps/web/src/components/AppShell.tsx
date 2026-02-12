@@ -5,6 +5,7 @@ import { PrivacyToggle } from '@/features/privacy/PrivacyToggle'
 const NAV_ITEMS = [
   { to: '/sessions', label: 'Sessions', icon: '>' },
   { to: '/stats', label: 'Stats', icon: '#' },
+  { to: '/settings', label: 'Settings', icon: '*' },
 ] as const
 
 export function AppShell({ children }: { children: ReactNode }) {

@@ -101,6 +101,7 @@ export interface SessionDetail {
   branch: string | null
   turns: Turn[]
   totalTokens: TokenUsage
+  tokensByModel: Record<string, TokenUsage>
   toolFrequency: Record<string, number>
   errors: SessionError[]
   models: string[]
@@ -213,6 +214,7 @@ export interface RawJsonlMessage {
     message?: {
       type?: string
       message?: {
+        model?: string
         content?: Array<{ type: string; name?: string; id?: string; input?: Record<string, any> }>
         usage?: {
           input_tokens?: number

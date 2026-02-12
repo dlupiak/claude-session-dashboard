@@ -1,17 +1,40 @@
+import { useMemo } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
 import { statsQuery } from '@/features/stats/stats.queries'
 import { ActivityChart } from '@/features/stats/ActivityChart'
 import { ModelUsageChart } from '@/features/stats/ModelUsageChart'
 import { HourlyDistribution } from '@/features/stats/HourlyDistribution'
-import { formatDuration, formatTokenCount } from '@/lib/utils/format'
+import { formatDuration, formatTokenCount, formatUSD } from '@/lib/utils/format'
+import { useSessionCost } from '@/features/cost-estimation/useSessionCost'
+import type { TokenUsage } from '@/lib/parsers/types'
 
 export const Route = createFileRoute('/_dashboard/stats')({
   component: StatsPage,
 })
 
+const EMPTY_TOKENS_BY_MODEL: Record<string, TokenUsage> = {}
+
 function StatsPage() {
   const { data: stats, isLoading } = useQuery(statsQuery)
+
+  // Convert stats.modelUsage to Record<string, TokenUsage> for cost calculation
+  // All hooks must be called before any early returns
+  const tokensByModel = useMemo(() => {
+    if (!stats) return EMPTY_TOKENS_BY_MODEL
+    const result: Record<string, TokenUsage> = {}
+    for (const [model, usage] of Object.entries(stats.modelUsage)) {
+      result[model] = {
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        cacheReadInputTokens: usage.cacheReadInputTokens,
+        cacheCreationInputTokens: usage.cacheCreationInputTokens,
+      }
+    }
+    return result
+  }, [stats])
+
+  const { cost } = useSessionCost(tokensByModel)
 
   if (isLoading) {
     return (
@@ -36,12 +59,7 @@ function StatsPage() {
   }
 
   const totalTokens = Object.values(stats.modelUsage).reduce(
-    (sum, m) =>
-      sum +
-      m.inputTokens +
-      m.outputTokens +
-      m.cacheReadInputTokens +
-      m.cacheCreationInputTokens,
+    (sum, m) => sum + m.inputTokens + m.outputTokens,
     0,
   )
 
@@ -54,13 +72,21 @@ function StatsPage() {
       </p>
 
       {/* Summary cards */}
-      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-5">
         <StatCard label="Total Sessions" value={String(stats.totalSessions)} />
         <StatCard
           label="Total Messages"
           value={stats.totalMessages.toLocaleString()}
         />
-        <StatCard label="Total Tokens" value={formatTokenCount(totalTokens)} />
+        <StatCard
+          label="Total Tokens"
+          value={formatTokenCount(totalTokens)}
+          sub={cost ? `~${formatUSD(cost.totalUSD)}` : undefined}
+        />
+        <StatCard
+          label="Total Estimated Cost"
+          value={cost ? `~${formatUSD(cost.totalUSD)}` : 'N/A'}
+        />
         <StatCard
           label="Longest Session"
           value={formatDuration(stats.longestSession.duration)}

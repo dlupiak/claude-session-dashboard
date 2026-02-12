@@ -18,12 +18,18 @@ Claude Code stores session data locally in `~/.claude/projects/`, but there's no
 
 - **Sessions list** with search, status filters, project filters, and pagination
 - **Session detail** with context window breakdown, tool usage stats, agent dispatch history
+- **Cost estimation** — per-session and per-agent cost estimates based on Anthropic API pricing, with per-model and per-category breakdowns (input/output/cache)
+- **Settings page** — configure API pricing per model and subscription tier, stored in `~/.claude-dashboard/settings.json`
 - **Timeline chart** showing tool calls, agent runs, and skill invocations on a Gantt-style timeline with zoom controls
-- **Stats page** with aggregate metrics across all sessions
+- **Stats page** with aggregate metrics, total estimated cost, and model usage across all sessions
 - **Live updates** — active sessions refresh automatically (3s polling for status, 30s for full data)
 - **Privacy mode** — toggle to anonymize paths and usernames for safe screenshot sharing
 
 ![Session Detail](session-detail-full.png)
+
+![Stats Page](stats-page.png)
+
+![Settings Page](settings-page.png)
 
 ## Quick Start
 
@@ -61,12 +67,14 @@ apps/web/src/
       sessions/
         index.tsx            # Sessions list page
         $sessionId.tsx       # Session detail page
-      stats/
-        index.tsx            # Aggregate stats page
+      stats.tsx              # Aggregate stats page
+      settings.tsx           # Pricing & account settings page
   features/                  # Vertical Slice Architecture
     sessions/                # Sessions list feature
     session-detail/          # Session detail feature
     stats/                   # Stats feature
+    cost-estimation/         # Cost calculation & display
+    settings/                # Pricing config & settings persistence
   lib/
     scanner/                 # Filesystem scanner for ~/.claude
     parsers/                 # JSONL session file parsers

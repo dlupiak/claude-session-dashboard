@@ -7,6 +7,8 @@ import { ToolUsagePanel } from '@/features/session-detail/ToolUsagePanel'
 import { ErrorPanel } from '@/features/session-detail/ErrorPanel'
 import { AgentsSkillsPanel } from '@/features/session-detail/AgentsSkillsPanel'
 import { TasksPanel } from '@/features/session-detail/TasksPanel'
+import { CostEstimationPanel } from '@/features/cost-estimation/CostEstimationPanel'
+import { CostSummaryLine } from '@/features/cost-estimation/CostSummaryLine'
 import { formatDuration, formatDateTime } from '@/lib/utils/format'
 import { usePrivacy } from '@/features/privacy/PrivacyContext'
 import { z } from 'zod'
@@ -85,6 +87,7 @@ function SessionDetailPage() {
             {startedAt && <span>{formatDateTime(startedAt)}</span>}
             <span>{formatDuration(durationMs)}</span>
             <span>{detail.turns.length} turns</span>
+            <CostSummaryLine tokensByModel={detail.tokensByModel} />
           </div>
           {detail.models.length > 0 && (
             <div className="mt-1 flex gap-1">
@@ -108,6 +111,11 @@ function SessionDetailPage() {
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         <ContextWindowPanel contextWindow={detail.contextWindow} tokens={detail.totalTokens} />
         <ToolUsagePanel toolFrequency={detail.toolFrequency} />
+      </div>
+
+      {/* Cost estimation */}
+      <div className="mt-4">
+        <CostEstimationPanel tokensByModel={detail.tokensByModel} />
       </div>
 
       {/* Agents & Skills */}
