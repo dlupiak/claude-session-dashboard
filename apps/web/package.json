@@ -7,7 +7,7 @@
   "homepage": "https://github.com/dlupiak/claude-session-dashboard",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dlupiak/claude-session-dashboard.git"
+    "url": "git+https://github.com/dlupiak/claude-session-dashboard.git"
   },
   "keywords": [
     "claude",
@@ -22,8 +22,8 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "claude-dashboard": "./bin/cli.mjs",
-    "claude-session-dashboard": "./bin/cli.mjs"
+    "claude-dashboard": "bin/cli.mjs",
+    "claude-session-dashboard": "bin/cli.mjs"
   },
   "files": [
     "bin/",
