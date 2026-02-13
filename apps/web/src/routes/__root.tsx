@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PrivacyProvider } from '@/features/privacy/PrivacyContext'
+import appCss from '@/styles/app.css?url'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +29,7 @@ export const Route = createRootRoute({
     links: [
       {
         rel: 'stylesheet',
-        href: '/src/styles/app.css',
+        href: appCss,
       },
     ],
   }),
