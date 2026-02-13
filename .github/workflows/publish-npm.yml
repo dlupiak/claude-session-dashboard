@@ -40,7 +40,10 @@ jobs:
       - name: Set version from tag
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          npm version "$VERSION" --no-git-tag-version
+          CURRENT=$(node -p "require('./package.json').version")
+          if [ "$VERSION" != "$CURRENT" ]; then
+            npm version "$VERSION" --no-git-tag-version
+          fi
 
       - name: Publish to npm
         run: npm publish --access public
