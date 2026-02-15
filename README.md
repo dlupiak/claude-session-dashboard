@@ -40,7 +40,7 @@ This dashboard gives you answers. It reads your local session files, parses the 
 - Hourly activity distribution chart
 - Aggregate metrics: total sessions, messages, tokens, estimated cost
 
-![Stats Overview](screenshots/stats-overview.png)
+![Stats Overview](screenshots/stats-overview-full.png)
 
 **Per-project analytics**
 - Dedicated "Projects" tab with sortable table
