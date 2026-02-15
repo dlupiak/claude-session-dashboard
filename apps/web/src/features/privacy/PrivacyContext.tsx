@@ -22,8 +22,9 @@ function readStoredPrivacyMode(): boolean {
 interface PrivacyContextValue {
   privacyMode: boolean
   togglePrivacyMode: () => void
-  anonymizePath: (path: string) => string
+  anonymizePath: (path: string, projectName?: string) => string
   anonymizeProjectName: (name: string) => string
+  anonymizeBranch: (branch: string) => string
 }
 
 const PrivacyContext = createContext<PrivacyContextValue | null>(null)
@@ -38,6 +39,10 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
   const projectNameMapRef = useRef<Map<string, string>>(new Map())
   const nextIndexRef = useRef(1)
 
+  // Ref-based map for stable branch name anonymization
+  const branchNameMapRef = useRef<Map<string, string>>(new Map())
+  const nextBranchIndexRef = useRef(1)
+
   const togglePrivacyMode = useCallback(() => {
     setPrivacyMode((prev) => {
       const next = !prev
@@ -46,20 +51,14 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
       } catch {
         // Ignore write failures
       }
-      // Clear the project name map on toggle so indices reset
+      // Clear the anonymization maps on toggle so indices reset
       projectNameMapRef.current = new Map()
       nextIndexRef.current = 1
+      branchNameMapRef.current = new Map()
+      nextBranchIndexRef.current = 1
       return next
     })
   }, [])
-
-  const anonymizePath = useCallback(
-    (path: string): string => {
-      if (!privacyMode) return path
-      return anonymizePathUtil(path)
-    },
-    [privacyMode],
-  )
 
   const anonymizeProjectName = useCallback(
     (name: string): string => {
@@ -74,13 +73,39 @@ export function PrivacyProvider({ children }: { children: ReactNode }) {
     [privacyMode],
   )
 
+  const anonymizePathFn = useCallback(
+    (path: string, projectName?: string): string => {
+      if (!privacyMode) return path
+      if (projectName) {
+        const anonName = anonymizeProjectName(projectName)
+        return anonymizePathUtil(path, anonName)
+      }
+      return anonymizePathUtil(path)
+    },
+    [privacyMode, anonymizeProjectName],
+  )
+
+  const anonymizeBranch = useCallback(
+    (branch: string): string => {
+      if (!privacyMode) return branch
+      const existing = branchNameMapRef.current.get(branch)
+      if (existing) return existing
+      const anonymized = `branch-${nextBranchIndexRef.current}`
+      nextBranchIndexRef.current += 1
+      branchNameMapRef.current.set(branch, anonymized)
+      return anonymized
+    },
+    [privacyMode],
+  )
+
   return (
     <PrivacyContext.Provider
       value={{
         privacyMode,
         togglePrivacyMode,
-        anonymizePath,
+        anonymizePath: anonymizePathFn,
         anonymizeProjectName,
+        anonymizeBranch,
       }}
     >
       {children}

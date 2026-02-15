@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { projectAnalyticsQuery } from './project-analytics.queries'
 import { ProjectTable } from './ProjectTable'
 import { formatDuration } from '@/lib/utils/format'
+import { usePrivacy } from '@/features/privacy/PrivacyContext'
 
 export function ProjectAnalytics() {
+  const { anonymizeProjectName } = usePrivacy()
   const { data, isLoading } = useQuery(projectAnalyticsQuery)
 
   if (isLoading) {
@@ -55,7 +57,7 @@ export function ProjectAnalytics() {
         />
         <SummaryCard
           label="Most Active"
-          value={mostActive.projectName}
+          value={anonymizeProjectName(mostActive.projectName)}
           sub={`${mostActive.totalSessions} sessions`}
         />
       </div>

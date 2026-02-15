@@ -30,7 +30,7 @@ function SessionDetailPage() {
   const { sessionId } = Route.useParams()
   const { project = '' } = Route.useSearch()
 
-  const { privacyMode, anonymizeProjectName } = usePrivacy()
+  const { privacyMode, anonymizeProjectName, anonymizeBranch } = usePrivacy()
   const isActive = useIsSessionActive(sessionId)
 
   const { data: detail, isLoading, error } = useQuery(
@@ -89,7 +89,7 @@ function SessionDetailPage() {
           </h1>
           <div className="mt-1 flex items-center gap-3 text-xs text-gray-400">
             {detail.branch && (
-              <span className="font-mono">{detail.branch}</span>
+              <span className="font-mono">{anonymizeBranch(detail.branch)}</span>
             )}
             {startedAt && <span>{formatDateTime(startedAt)}</span>}
             <span>{formatDuration(durationMs)}</span>
