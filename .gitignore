@@ -7,10 +7,11 @@ dist/
 .env
 .env.*
 .claude/settings.local.json
+**/agent-memory/
 .playwright-mcp/
 playwright-report/
 test-results/
 blob-report/
-e2e/screenshots/
+**/e2e/screenshots/
 docs/marketing/
 scripts/
