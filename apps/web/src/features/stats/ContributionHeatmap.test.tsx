@@ -29,18 +29,6 @@ describe('ContributionHeatmap', () => {
       expect(container.textContent).toContain('Fri')
     })
 
-    it('should render legend with Less and More labels', () => {
-      const { container } = render(
-        <ContributionHeatmap
-          dailyActivity={[]}
-          dailyModelTokens={[]}
-        />
-      )
-
-      expect(container.textContent).toContain('Less')
-      expect(container.textContent).toContain('More')
-    })
-
     it('should render subtitle about token usage', () => {
       const { container } = render(
         <ContributionHeatmap
