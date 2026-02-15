@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { format, addDays, getDay, parseISO } from 'date-fns'
 import type { DailyActivity, DailyModelTokens } from '@/lib/parsers/types'
 import { formatTokenCount } from '@/lib/utils/format'
@@ -84,7 +85,7 @@ export function ContributionHeatmap({
 }) {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null)
 
-  const { days, monthLabels, totalWeeks } = useMemo(() => {
+  const { days, monthLabels } = useMemo(() => {
     // Step 1: Build a lookup map joining both data sources by date
     const dataMap = new Map<string, { sessionCount: number; totalTokens: number }>()
 
@@ -160,9 +161,7 @@ export function ContributionHeatmap({
       }
     }
 
-    const maxWeek = allDays.length > 0 ? allDays[allDays.length - 1].weekIndex + 1 : 0
-
-    return { days: allDays, monthLabels: labels, totalWeeks: maxWeek }
+    return { days: allDays, monthLabels: labels }
   }, [dailyActivity, dailyModelTokens])
 
   if (days.length === 0) {
@@ -176,62 +175,67 @@ export function ContributionHeatmap({
     )
   }
 
-  const gridWidth = totalWeeks * (CELL_SIZE + CELL_GAP)
-
   return (
     <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4">
       <h3 className="text-sm font-semibold text-gray-300">Activity</h3>
       <p className="mt-1 text-xs text-gray-500">Token usage intensity over the past year</p>
 
       <div className="mt-4 overflow-x-auto">
-        <div className="relative" style={{ minWidth: DAY_LABEL_WIDTH + gridWidth }}>
-          {/* Month labels */}
-          <div
-            className="flex text-[10px] text-gray-500"
-            style={{ paddingLeft: DAY_LABEL_WIDTH, marginBottom: CELL_GAP }}
-          >
-            {monthLabels.map((ml, i) => (
-              <div
-                key={`${ml.label}-${i}`}
-                className="absolute"
-                style={{ left: DAY_LABEL_WIDTH + ml.weekIndex * (CELL_SIZE + CELL_GAP) }}
-              >
-                {ml.label}
-              </div>
-            ))}
-          </div>
-
+        <div className="relative w-full">
           {/* Grid container with day labels */}
-          <div className="flex" style={{ marginTop: 16 }}>
-            {/* Day labels */}
+          <div className="flex">
+            {/* Day labels column (spacer for month row + labels for grid rows) */}
             <div
               className="flex flex-col text-[10px] text-gray-500"
-              style={{
-                width: DAY_LABEL_WIDTH,
-                gap: CELL_GAP,
-              }}
+              style={{ width: DAY_LABEL_WIDTH }}
             >
+              {/* Spacer for month labels row */}
+              <div style={{ height: 16, marginBottom: CELL_GAP }} />
               {DAY_LABELS.map((label, i) => (
                 <div
                   key={i}
                   className="flex items-center"
-                  style={{ height: CELL_SIZE }}
+                  style={{ height: CELL_SIZE, marginTop: i > 0 ? CELL_GAP : 0 }}
                 >
                   {label}
                 </div>
               ))}
             </div>
 
-            {/* Heatmap grid */}
-            <div
-              className="relative grid"
-              style={{
-                gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
-                gridAutoFlow: 'column',
-                gridAutoColumns: `${CELL_SIZE}px`,
-                gap: CELL_GAP,
-              }}
-            >
+            {/* Month labels + Heatmap grid (same column structure) */}
+            <div className="flex flex-1 flex-col">
+              {/* Month labels row - uses matching grid */}
+              <div
+                className="grid text-[10px] text-gray-500"
+                style={{
+                  gridAutoFlow: 'column',
+                  gridAutoColumns: `minmax(${CELL_SIZE}px, 1fr)`,
+                  gap: CELL_GAP,
+                  height: 16,
+                  marginBottom: CELL_GAP,
+                }}
+              >
+                {monthLabels.map((ml, i) => (
+                  <div
+                    key={`${ml.label}-${i}`}
+                    className="flex items-end"
+                    style={{ gridColumn: ml.weekIndex + 1 }}
+                  >
+                    {ml.label}
+                  </div>
+                ))}
+              </div>
+
+              {/* Heatmap grid */}
+              <div
+                className="relative grid"
+                style={{
+                  gridTemplateRows: `repeat(7, ${CELL_SIZE}px)`,
+                  gridAutoFlow: 'column',
+                  gridAutoColumns: `minmax(${CELL_SIZE}px, 1fr)`,
+                  gap: CELL_GAP,
+                }}
+              >
               {days.map((day) => (
                 <div
                   key={day.date}
@@ -245,66 +249,51 @@ export function ContributionHeatmap({
                   }}
                   onMouseEnter={(e) => {
                     const rect = (e.target as HTMLElement).getBoundingClientRect()
-                    const container = (e.target as HTMLElement).closest('.overflow-x-auto')
-                    const containerRect = container?.getBoundingClientRect()
                     setTooltip({
                       date: day.date,
                       dateFormatted: day.dateFormatted,
                       sessionCount: day.sessionCount,
                       totalTokens: day.totalTokens,
-                      x: rect.left - (containerRect?.left ?? 0) + CELL_SIZE / 2,
-                      y: rect.top - (containerRect?.top ?? 0) - 8,
+                      x: rect.left + rect.width / 2,
+                      y: rect.top - 8,
                     })
                   }}
                   onMouseLeave={() => setTooltip(null)}
                 />
               ))}
 
-              {/* Tooltip */}
-              {tooltip && (
-                <div
-                  className="pointer-events-none absolute z-50 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs shadow-lg"
-                  style={{
-                    left: tooltip.x,
-                    top: tooltip.y,
-                    transform: 'translate(-50%, -100%)',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  <p className="font-medium text-gray-300">{tooltip.dateFormatted}</p>
-                  {tooltip.totalTokens > 0 || tooltip.sessionCount > 0 ? (
-                    <div className="mt-1 space-y-0.5 text-gray-400">
-                      <p>
-                        {tooltip.sessionCount} {tooltip.sessionCount === 1 ? 'session' : 'sessions'}
-                      </p>
-                      <p>{formatTokenCount(tooltip.totalTokens)} tokens</p>
-                    </div>
-                  ) : (
-                    <p className="mt-1 text-gray-500">No activity</p>
-                  )}
-                </div>
-              )}
+            </div>
             </div>
           </div>
 
-          {/* Legend */}
-          <div className="mt-3 flex items-center justify-end gap-1 text-[10px] text-gray-500">
-            <span>Less</span>
-            {INTENSITY_COLORS.map((color, i) => (
-              <div
-                key={i}
-                className="rounded-sm"
-                style={{
-                  width: CELL_SIZE,
-                  height: CELL_SIZE,
-                  backgroundColor: color,
-                }}
-              />
-            ))}
-            <span>More</span>
-          </div>
         </div>
       </div>
+
+      {/* Tooltip rendered via portal to escape overflow boundaries */}
+      {tooltip && createPortal(
+        <div
+          className="pointer-events-none fixed z-50 rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-xs shadow-lg"
+          style={{
+            left: tooltip.x,
+            top: tooltip.y,
+            transform: 'translate(-50%, -100%)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          <p className="font-medium text-gray-300">{tooltip.dateFormatted}</p>
+          {tooltip.totalTokens > 0 || tooltip.sessionCount > 0 ? (
+            <div className="mt-1 space-y-0.5 text-gray-400">
+              <p>
+                {tooltip.sessionCount} {tooltip.sessionCount === 1 ? 'session' : 'sessions'}
+              </p>
+              <p>{formatTokenCount(tooltip.totalTokens)} tokens</p>
+            </div>
+          ) : (
+            <p className="mt-1 text-gray-500">No activity</p>
+          )}
+        </div>,
+        document.body,
+      )}
     </div>
   )
 }
