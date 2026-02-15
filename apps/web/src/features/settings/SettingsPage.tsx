@@ -9,6 +9,7 @@ import {
 } from './settings.types'
 import { TierSelector } from './TierSelector'
 import { PricingTableEditor } from './PricingTableEditor'
+import { usePrivacy } from '@/features/privacy/PrivacyContext'
 
 export function SettingsPage() {
   const { data: settings, isLoading } = useQuery(settingsQuery)
@@ -27,6 +28,7 @@ export function SettingsPage() {
 
 function SettingsForm({ settings }: { settings: Settings }) {
   const mutation = useSettingsMutation()
+  const { privacyMode, togglePrivacyMode } = usePrivacy()
 
   const [tier, setTier] = useState<SubscriptionTierId>(settings.subscriptionTier)
   const [overrides, setOverrides] = useState<Record<string, ModelPricingOverride>>(settings.pricingOverrides)
@@ -67,6 +69,65 @@ function SettingsForm({ settings }: { settings: Settings }) {
       <p className="mt-1 text-xs text-gray-500">
         Configure your subscription tier and API pricing for cost estimation.
       </p>
+
+      {/* Privacy Mode */}
+      <div className="mt-6">
+        <h2 className="text-sm font-semibold text-gray-300">Privacy Mode</h2>
+        <p className="mt-1 text-[10px] text-gray-500">
+          Hide project names, file paths, and branch names across the dashboard.
+          Useful when screen-sharing or recording demos.
+        </p>
+        <div className="mt-3 rounded-xl border border-gray-800 bg-gray-900/50 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-300">Enable privacy mode</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500">
+                {privacyMode ? 'On' : 'Off'}
+              </span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={privacyMode}
+                onClick={togglePrivacyMode}
+                className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
+                  privacyMode ? 'bg-blue-600' : 'bg-gray-800'
+                }`}
+              >
+                <span
+                  className={`inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform ${
+                    privacyMode ? 'translate-x-[18px]' : 'translate-x-[3px]'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+          <div className="mt-3 border-t border-gray-800 pt-3">
+            <p className="text-[10px] font-medium text-gray-400">
+              What gets hidden:
+            </p>
+            <ul className="mt-1.5 space-y-1 text-[10px] text-gray-500">
+              <li>
+                <span className="text-gray-400">Project names</span>{' '}
+                <span className="font-mono text-gray-600">
+                  &rarr; project-1, project-2, ...
+                </span>
+              </li>
+              <li>
+                <span className="text-gray-400">File paths</span>{' '}
+                <span className="font-mono text-gray-600">
+                  &rarr; .../project-1
+                </span>
+              </li>
+              <li>
+                <span className="text-gray-400">Branch names</span>{' '}
+                <span className="font-mono text-gray-600">
+                  &rarr; branch-1, branch-2, ...
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
 
       {/* Subscription Tier */}
       <div className="mt-6">
