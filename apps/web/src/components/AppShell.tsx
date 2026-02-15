@@ -1,6 +1,7 @@
 import { Link, useMatches } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { ActiveSessionsBadge } from '@/features/sessions/ActiveSessionsBadge'
+import { ThemeToggle } from '@/features/theme/ThemeToggle'
 
 const NAV_ITEMS = [
   {
@@ -74,7 +75,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="border-t border-gray-800 p-3">
+        <div className="border-t border-gray-800 p-3 space-y-3">
+          <ThemeToggle />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <a
