@@ -76,7 +76,7 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="bg-gray-950 text-gray-100 antialiased">
+      <body className="antialiased">
         {children}
         <Scripts />
       </body>

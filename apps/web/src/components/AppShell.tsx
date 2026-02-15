@@ -45,9 +45,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="flex w-56 shrink-0 flex-col border-r border-gray-800 bg-gray-950">
-        <div className="flex h-14 items-center border-b border-gray-800 px-4">
-          <Link to="/sessions" className="text-sm font-bold text-white">
+      <aside className="flex w-56 shrink-0 flex-col border-r border-gray-200 bg-gray-50">
+        <div className="flex h-14 items-center border-b border-gray-200 px-4">
+          <Link to="/sessions" className="text-sm font-bold text-gray-900">
             <span className="text-brand-500">Claude</span> Dashboard
           </Link>
         </div>
@@ -61,8 +61,8 @@ export function AppShell({ children }: { children: ReactNode }) {
                 to={item.to}
                 className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
                   isActive
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200'
+                    ? 'bg-gray-200 text-gray-900'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-800'
                 }`}
               >
                 <span className="text-gray-500">
@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           })}
         </nav>
 
-        <div className="border-t border-gray-800 p-3 space-y-3">
+        <div className="border-t border-gray-200 p-3 space-y-3">
           <ThemeToggle />
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 href="https://github.com/dlupiak/claude-session-dashboard"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-300 transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
                 title="GitHub Repository"
               >
                 <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
@@ -94,7 +94,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 href="https://www.npmjs.com/package/claude-session-dashboard"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-500 hover:text-gray-300 transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
                 title="npm Package"
               >
                 <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">

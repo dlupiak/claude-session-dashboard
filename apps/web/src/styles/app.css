@@ -47,8 +47,3 @@ body {
   color: var(--color-gray-100);
   transition: background-color 150ms ease, color 150ms ease;
 }
-
-/* Ensure Tailwind utility text-white stays readable in light mode */
-:root[data-theme='light'] .text-white {
-  color: #1c1c1a !important;
-}
