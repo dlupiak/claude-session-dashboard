@@ -69,7 +69,7 @@ export function CostEstimationPanel({ tokensByModel }: CostEstimationPanelProps)
 
 function CategoryBreakdown({ cost }: { cost: CostBreakdown }) {
   const categories = [
-    { label: 'Input tokens', value: cost.byCategory.input, color: 'text-blue-400' },
+    { label: 'Input tokens', value: cost.byCategory.input, color: 'text-brand-400' },
     { label: 'Output tokens', value: cost.byCategory.output, color: 'text-emerald-400' },
     { label: 'Cache read', value: cost.byCategory.cacheRead, color: 'text-amber-400' },
     { label: 'Cache write', value: cost.byCategory.cacheWrite, color: 'text-purple-400' },
@@ -93,7 +93,7 @@ function CostBar({ cost }: { cost: CostBreakdown }) {
   if (cost.totalUSD === 0) return null
 
   const segments = [
-    { key: 'input', value: cost.byCategory.input, color: 'bg-blue-400' },
+    { key: 'input', value: cost.byCategory.input, color: 'bg-brand-400' },
     { key: 'output', value: cost.byCategory.output, color: 'bg-emerald-400' },
     { key: 'cacheRead', value: cost.byCategory.cacheRead, color: 'bg-amber-400' },
     { key: 'cacheWrite', value: cost.byCategory.cacheWrite, color: 'bg-purple-400' },

@@ -8,7 +8,7 @@ export function ActiveSessionsBadge() {
   if (count === 0) return null
 
   return (
-    <span className="ml-auto rounded-full bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-400">
+    <span className="ml-auto rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
       {count}
     </span>
   )

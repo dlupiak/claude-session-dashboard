@@ -114,7 +114,7 @@ function StatsPage() {
           onClick={() => navigate({ search: { tab: 'overview' } })}
           className={`px-4 py-2 text-sm border-b-2 transition-colors ${
             tab === 'overview'
-              ? 'border-blue-500 text-white'
+              ? 'border-brand-500 text-white'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >
@@ -124,7 +124,7 @@ function StatsPage() {
           onClick={() => navigate({ search: { tab: 'projects' } })}
           className={`px-4 py-2 text-sm border-b-2 transition-colors ${
             tab === 'projects'
-              ? 'border-blue-500 text-white'
+              ? 'border-brand-500 text-white'
               : 'border-transparent text-gray-400 hover:text-gray-200'
           }`}
         >

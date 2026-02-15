@@ -35,7 +35,7 @@ export function HourlyDistribution({
                 className="absolute bottom-0 w-full rounded-t transition-colors"
                 style={{
                   height: `${height}%`,
-                  backgroundColor: `rgba(59, 130, 246, ${0.2 + intensity * 0.6})`,
+                  backgroundColor: `rgba(217, 119, 87, ${0.2 + intensity * 0.6})`,
                 }}
               />
               {/* Tooltip on hover */}

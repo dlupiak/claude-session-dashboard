@@ -54,7 +54,7 @@ function SessionDetailPage() {
         </p>
         <Link
           to="/sessions"
-          className="mt-2 inline-block text-sm text-blue-400 hover:underline"
+          className="mt-2 inline-block text-sm text-brand-300 hover:underline"
         >
           Back to sessions
         </Link>
@@ -154,7 +154,9 @@ function SessionDetailPage() {
         </div>
       )}
 
-      <ErrorPanel errors={detail.errors} />
+      <div className="mt-4">
+        <ErrorPanel errors={detail.errors} />
+      </div>
 
       {/* Timeline Events Chart */}
       <div className="mt-6">

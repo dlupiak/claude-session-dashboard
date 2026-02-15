@@ -31,7 +31,7 @@ export function PaginationControls({
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          className="rounded-lg border border-gray-700 bg-gray-800/50 px-2 py-1 text-xs text-gray-200 outline-none focus:border-blue-500"
+          className="rounded-lg border border-gray-700 bg-gray-800/50 px-2 py-1 text-xs text-gray-200 outline-none focus:border-brand-500"
         >
           {VALID_SIZES.map((size) => (
             <option key={size} value={size}>
@@ -74,7 +74,7 @@ export function PaginationControls({
                 onClick={() => onPageChange(item)}
                 className={`min-w-[2rem] rounded-lg px-2 py-1.5 text-xs font-mono transition-colors ${
                   item === page
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-brand-600 text-white'
                     : 'border border-gray-700 bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200'
                 }`}
               >

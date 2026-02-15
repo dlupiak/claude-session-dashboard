@@ -5,11 +5,11 @@ import type { DailyActivity, DailyModelTokens } from '@/lib/parsers/types'
 import { formatTokenCount } from '@/lib/utils/format'
 
 const INTENSITY_COLORS = [
-  '#1f2937', // Level 0: gray-800 (no activity)
-  '#1e3a5f', // Level 1: dark blue
-  '#1d4ed8b3', // Level 2: blue-700 at ~70% opacity
-  '#3b82f6cc', // Level 3: blue-500 at ~80% opacity
-  '#60a5fa', // Level 4: blue-400 (most intense)
+  '#2a2926', // Level 0: warm gray-800 (no activity)
+  '#3d2a1e', // Level 1: dark terracotta
+  '#a8512eb3', // Level 2: brand-700 at ~70% opacity
+  '#d97757cc', // Level 3: brand-500 at ~80% opacity
+  '#e09070', // Level 4: brand-400 (most intense)
 ] as const
 
 const DAY_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', ''] as const

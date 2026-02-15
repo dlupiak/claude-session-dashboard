@@ -90,7 +90,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
                 aria-checked={privacyMode}
                 onClick={togglePrivacyMode}
                 className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors ${
-                  privacyMode ? 'bg-blue-600' : 'bg-gray-800'
+                  privacyMode ? 'bg-brand-600' : 'bg-gray-800'
                 }`}
               >
                 <span
@@ -183,7 +183,7 @@ function SettingsForm({ settings }: { settings: Settings }) {
             disabled={!isDirty || mutation.isPending}
             className={`rounded-lg px-4 py-1.5 text-xs font-medium transition-colors ${
               isDirty && !mutation.isPending
-                ? 'bg-blue-600 text-white hover:bg-blue-500'
+                ? 'bg-brand-600 text-white hover:bg-brand-500'
                 : 'cursor-not-allowed bg-gray-800 text-gray-500'
             }`}
           >

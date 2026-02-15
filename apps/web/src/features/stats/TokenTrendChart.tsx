@@ -12,7 +12,7 @@ import { format, parseISO, startOfISOWeek } from 'date-fns'
 import type { DailyModelTokens } from '@/lib/parsers/types'
 import { formatTokenCount } from '@/lib/utils/format'
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1']
+const COLORS = ['#d97757', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#b07cc5']
 
 type Granularity = 'daily' | 'weekly'
 
@@ -240,14 +240,14 @@ export function TokenTrendChart({ data }: { data: DailyModelTokens[] }) {
       <div className="mt-4 h-72">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#2a2926" />
             <XAxis
               dataKey="dateLabel"
-              tick={{ fill: '#6b7280', fontSize: 10 }}
+              tick={{ fill: '#7a7668', fontSize: 10 }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#6b7280', fontSize: 10 }}
+              tick={{ fill: '#7a7668', fontSize: 10 }}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value: number) => formatTokenCount(value)}

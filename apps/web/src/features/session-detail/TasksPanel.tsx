@@ -8,8 +8,8 @@ const statusConfig: Record<
   pending: { label: 'Pending', bg: 'bg-gray-500/20', text: 'text-gray-400' },
   in_progress: {
     label: 'In Progress',
-    bg: 'bg-blue-500/20',
-    text: 'text-blue-400',
+    bg: 'bg-brand-500/20',
+    text: 'text-brand-400',
   },
   completed: {
     label: 'Done',

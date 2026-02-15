@@ -67,7 +67,7 @@ export function SessionFilters({ projects, activeCount }: SessionFiltersProps) {
         placeholder="Search sessions..."
         value={localSearch}
         onChange={(e) => handleSearchChange(e.target.value)}
-        className="rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
       />
 
       <div className="flex rounded-lg border border-gray-700 text-xs">
@@ -93,7 +93,7 @@ export function SessionFilters({ projects, activeCount }: SessionFiltersProps) {
         <select
           value={project}
           onChange={(e) => handleProjectChange(e.target.value)}
-          className="rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-200 outline-none focus:border-blue-500"
+          className="rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-200 outline-none focus:border-brand-500"
         >
           <option value="">All projects</option>
           {projects.map((p) => (

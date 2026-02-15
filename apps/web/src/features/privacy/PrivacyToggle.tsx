@@ -10,7 +10,7 @@ export function PrivacyToggle() {
       title={privacyMode ? 'Privacy mode on' : 'Privacy mode off'}
       className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs transition-colors ${
         privacyMode
-          ? 'bg-blue-600 text-white'
+          ? 'bg-brand-600 text-white'
           : 'bg-gray-800 text-gray-400 hover:text-gray-200'
       }`}
     >
