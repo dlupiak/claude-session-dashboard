@@ -182,12 +182,19 @@ npm run test         # Unit tests (Vitest)
 npm run e2e          # End-to-end tests (Playwright)
 ```
 
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions and conventions. Check [good first issues](https://github.com/dlupiak/claude-session-dashboard/labels/good%20first%20issue) for beginner-friendly tasks.
+
+If you find this project useful, consider giving it a star -- it helps others discover it.
+
 ## Links
 
 - [GitHub](https://github.com/dlupiak/claude-session-dashboard)
 - [npm](https://www.npmjs.com/package/claude-session-dashboard)
 - [Docker](https://github.com/dlupiak/claude-session-dashboard/pkgs/container/claude-session-dashboard)
 - [Issues](https://github.com/dlupiak/claude-session-dashboard/issues)
+- [Discussions](https://github.com/dlupiak/claude-session-dashboard/discussions)
 
 ## License
 
