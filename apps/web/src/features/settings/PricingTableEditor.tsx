@@ -103,9 +103,9 @@ export function PricingTableEditor({ overrides, onChange }: PricingTableEditorPr
                       }
                       className={`w-20 rounded border px-2 py-1 text-right font-mono text-xs ${
                         changed
-                          ? 'border-blue-500/50 bg-blue-500/10 text-blue-400'
+                          ? 'border-brand-500/50 bg-brand-500/10 text-brand-400'
                           : 'border-gray-700 bg-gray-800 text-gray-300'
-                      } focus:border-blue-500 focus:outline-none`}
+                      } focus:border-brand-500 focus:outline-none`}
                     />
                   </td>
                 )
@@ -115,7 +115,7 @@ export function PricingTableEditor({ overrides, onChange }: PricingTableEditorPr
         </tbody>
       </table>
       <p className="mt-2 text-[10px] text-gray-600">
-        Prices in USD per million tokens. Overridden values shown in blue.
+        Prices in USD per million tokens. Overridden values are highlighted.
       </p>
     </div>
   )

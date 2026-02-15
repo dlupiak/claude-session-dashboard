@@ -8,43 +8,84 @@ user_invocable: false
 
 ## Theme
 
-Dark theme dashboard optimized for developer tooling and data visualization.
+Dark theme dashboard with warm gray tones and terracotta brand accent, optimized for developer tooling and data visualization.
 
 ## Tailwind Theme
 
 Uses Tailwind CSS v4 with CSS-first config (`@import 'tailwindcss'` in `app.css`).
 
+Custom `@theme` block overrides default cool grays with warm grays and adds a `brand-*` terracotta accent scale.
+
 ### Colors
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `gray-950` | Body background | Page background |
-| `gray-900/50` | Card/panel background | `bg-gray-900/50` |
-| `gray-800` | Borders, dividers | `border-gray-800` |
-| `gray-700` | Subtle fills | Inactive bars, muted elements |
-| `gray-600` | Disabled states | |
-| `gray-500` | Muted text | Timestamps, labels |
-| `gray-400` | Secondary text | Descriptions |
-| `gray-300` | Headings, labels | Panel titles |
-| `gray-100` | Primary text | Body text |
-| `white` | Emphasis text | Hero numbers, key values |
-| `blue-400` / `blue-500` | Primary accent | Links, input tokens, messages |
-| `emerald-400` | Success / output | Output tokens |
-| `amber-400` / `amber-500` | Warning / cache | Cache tokens, autocompact |
-| `purple-400` / `purple-500` | Accent | Cache creation, system overhead |
-| `red-400` | Error | Error messages, limits |
+#### Warm Gray Scale (overrides Tailwind defaults)
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `gray-950` | `#141413` | Body/page background |
+| `gray-900` | `#1c1c1a` | Card/panel background (with `/50` opacity) |
+| `gray-800` | `#2a2926` | Borders, dividers |
+| `gray-700` | `#3d3b36` | Subtle fills, inactive bars |
+| `gray-600` | `#565349` | Disabled states |
+| `gray-500` | `#7a7668` | Muted text, timestamps, labels |
+| `gray-400` | `#a39e90` | Secondary text, descriptions |
+| `gray-300` | `#cdc8b8` | Headings, panel titles |
+| `gray-100` | `#eae6dc` | Primary text |
+| `white` | | Emphasis text, hero numbers |
+
+#### Brand Accent (terracotta)
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `brand-300` | `#f0b8a0` | Light accent text |
+| `brand-400` | `#e09070` | Links, input tokens, active elements |
+| `brand-500` | `#d97757` | Primary accent, tab indicators, logo highlight |
+| `brand-600` | `#c4643f` | Buttons, toggles |
+| `brand-700` | `#a8512e` | Dark accent |
+
+#### Semantic Colors (unchanged)
+
+| Token | Usage |
+|-------|-------|
+| `emerald-400` | Success / output tokens |
+| `amber-400` / `amber-500` | Warning / cache tokens |
+| `purple-400` / `purple-500` | Cache creation, system overhead |
+| `red-400` | Error messages, limits |
 
 ### Data Visualization Colors
 
 | Category | Color |
 |----------|-------|
-| Input tokens | `blue-400` |
+| Primary / Messages | `brand-500` (`#d97757`) |
+| Input tokens | `brand-400` (`#e09070`) |
 | Output tokens | `emerald-400` |
 | Cache read | `amber-400` |
 | Cache creation | `purple-400` |
 | System overhead | `purple-500` |
-| Messages | `blue-500` |
 | Free space | `gray-700` |
+
+#### Chart COLORS Array
+
+```ts
+const COLORS = ['#d97757', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#b07cc5']
+```
+
+#### Heatmap Intensity Scale
+
+```ts
+const INTENSITY_COLORS = ['#2a2926', '#3d2a1e', '#a8512eb3', '#d97757cc', '#e09070']
+```
+
+#### Tooltip Styling
+
+```ts
+{ backgroundColor: '#1c1c1a', border: '1px solid #3d3b36' }
+```
+
+#### Grid/Tick Colors
+
+- Grid stroke: `#2a2926`
+- Tick fill: `#7a7668`
 
 ## Component Patterns
 
@@ -58,8 +99,12 @@ Uses Tailwind CSS v4 with CSS-first config (`@import 'tailwindcss'` in `app.css`
 | Mono value | `text-xs font-mono text-gray-300` |
 | Badge | `rounded bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-400` |
 | Bar track | `h-2 rounded-full bg-gray-800 overflow-hidden` |
-| Link | `text-sm text-blue-400 hover:underline` |
+| Link | `text-sm text-brand-400 hover:underline` |
 | Muted link | `text-xs text-gray-500 hover:text-gray-300` |
+| Active button | `bg-brand-600 text-white hover:bg-brand-500` |
+| Focus ring | `focus:border-brand-500 focus:ring-brand-500` |
+| Active tab | `border-brand-500 text-white` |
+| Toggle on | `bg-brand-600` |
 
 ## Layout
 
@@ -68,6 +113,18 @@ Uses Tailwind CSS v4 with CSS-first config (`@import 'tailwindcss'` in `app.css`
 - Consistent `gap-4` between grid items
 - `mt-6` between major page sections
 - `space-y-2` for list items within panels
+
+## Header & Navigation
+
+- Logo: `<span className="text-brand-500">Claude</span> Dashboard`
+- Nav icons: inline SVG icons (16x16) instead of ASCII characters
+- Footer: GitHub + npm icon links with `text-gray-500 hover:text-gray-300`
+
+## Favicon
+
+- SVG terminal prompt icon at `public/favicon.svg`
+- Uses brand color `#d97757`
+- Meta theme-color: `#141413` (matches `gray-950`)
 
 ## Typography
 
@@ -78,9 +135,10 @@ Uses Tailwind CSS v4 with CSS-first config (`@import 'tailwindcss'` in `app.css`
 
 ## Visual Rules
 
-1. **Dark-first** — all backgrounds are dark gray, text is light
-2. **Subtle borders** — `border-gray-800` only, no shadows
-3. **Rounded panels** — `rounded-xl` for cards, `rounded-full` for bars/badges
-4. **Opacity for bars** — colored bar segments use `opacity-60`
-5. **Compact density** — small text sizes (`text-xs`, `text-[10px]`), tight spacing
-6. **Recharts styling** — dark tooltips (`bg-gray-800`), no grid lines, subtle reference lines
+1. **Dark-first** -- all backgrounds are dark warm gray, text is light
+2. **Subtle borders** -- `border-gray-800` only, no shadows
+3. **Rounded panels** -- `rounded-xl` for cards, `rounded-full` for bars/badges
+4. **Opacity for bars** -- colored bar segments use `opacity-60`
+5. **Compact density** -- small text sizes (`text-xs`, `text-[10px]`), tight spacing
+6. **Recharts styling** -- dark tooltips (`bg-gray-800`), no grid lines, subtle reference lines
+7. **Brand accent** -- use `brand-*` (terracotta) instead of `blue-*` for all interactive/accent elements

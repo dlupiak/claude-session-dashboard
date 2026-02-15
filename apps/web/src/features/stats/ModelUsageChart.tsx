@@ -9,7 +9,7 @@ import {
 import type { ModelUsage } from '@/lib/parsers/types'
 import { formatTokenCount } from '@/lib/utils/format'
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#6366f1']
+const COLORS = ['#d97757', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#b07cc5']
 
 export function ModelUsageChart({ data }: { data: ModelUsage }) {
   const chartData = Object.entries(data).map(([model, usage]) => ({
@@ -47,8 +47,8 @@ export function ModelUsageChart({ data }: { data: ModelUsage }) {
             <Tooltip
               formatter={(value: number) => formatTokenCount(value)}
               contentStyle={{
-                backgroundColor: '#111827',
-                border: '1px solid #374151',
+                backgroundColor: '#1c1c1a',
+                border: '1px solid #3d3b36',
                 borderRadius: '8px',
                 fontSize: '12px',
               }}

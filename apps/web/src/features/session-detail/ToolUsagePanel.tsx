@@ -32,10 +32,10 @@ export function ToolUsagePanel({
             </span>
             <div className="flex-1">
               <div
-                className="h-4 rounded bg-blue-500/20"
+                className="h-4 rounded bg-brand-500/20"
                 style={{ width: `${(count / maxCount) * 100}%` }}
               >
-                <span className="px-1.5 text-xs text-blue-300">{count}</span>
+                <span className="px-1.5 text-xs text-brand-300">{count}</span>
               </div>
             </div>
           </div>

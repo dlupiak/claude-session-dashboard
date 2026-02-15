@@ -10,7 +10,7 @@ export function ErrorPanel({ errors }: { errors: SessionError[] }) {
         Errors ({errors.length})
       </h3>
 
-      <div className="mt-3 space-y-2">
+      <div className="mt-3 max-h-64 space-y-2 overflow-y-auto">
         {errors.map((error, i) => (
           <div key={i} className="rounded-lg bg-red-950/30 p-2.5">
             <div className="flex items-center justify-between">

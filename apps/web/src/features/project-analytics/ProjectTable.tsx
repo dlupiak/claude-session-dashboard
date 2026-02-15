@@ -93,12 +93,12 @@ export function ProjectTable({ projects }: ProjectTableProps) {
                 <Link
                   to="/sessions"
                   search={{ project: project.projectName }}
-                  className="text-sm text-blue-400 hover:underline"
+                  className="text-sm text-brand-300 hover:underline"
                 >
                   {anonymizeProjectName(project.projectName)}
                 </Link>
                 {project.activeSessions > 0 && (
-                  <span className="ml-2 rounded-full bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-400">
+                  <span className="ml-2 rounded-full bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-medium text-emerald-400">
                     {project.activeSessions} active
                   </span>
                 )}

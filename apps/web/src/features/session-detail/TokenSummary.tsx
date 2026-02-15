@@ -9,7 +9,7 @@ export function TokenSummary({ tokens }: { tokens: TokenUsage }) {
     tokens.cacheCreationInputTokens
 
   const items = [
-    { label: 'Input', value: tokens.inputTokens, color: 'text-blue-400' },
+    { label: 'Input', value: tokens.inputTokens, color: 'text-brand-400' },
     { label: 'Output', value: tokens.outputTokens, color: 'text-emerald-400' },
     {
       label: 'Cache Read',

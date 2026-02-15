@@ -12,9 +12,9 @@ export function shortenToolName(name: string): string {
 
 const TOOL_COLORS: Record<string, string> = {
   // File reading
-  Read: '#60a5fa', // blue-400
-  Grep: '#60a5fa',
-  Glob: '#60a5fa',
+  Read: '#e09070', // brand-400
+  Grep: '#e09070',
+  Glob: '#e09070',
 
   // File writing
   Write: '#34d399', // emerald-400
@@ -54,7 +54,7 @@ export function getToolColor(toolName: string): string {
 
 export function getToolColorClass(toolName: string): string {
   const colorMap: Record<string, string> = {
-    '#60a5fa': 'text-blue-400',
+    '#e09070': 'text-brand-400',
     '#34d399': 'text-emerald-400',
     '#fbbf24': 'text-amber-400',
     '#818cf8': 'text-indigo-400',

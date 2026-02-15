@@ -25,12 +25,15 @@ export const Route = createRootRoute({
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Claude Session Dashboard' },
+      { name: 'theme-color', content: '#141413' },
+      { name: 'description', content: 'Local observability dashboard for Claude Code sessions' },
     ],
     links: [
       {
         rel: 'stylesheet',
         href: appCss,
       },
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
     ],
   }),
   component: RootComponent,

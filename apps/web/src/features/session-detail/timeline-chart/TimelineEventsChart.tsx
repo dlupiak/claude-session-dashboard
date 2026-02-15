@@ -199,7 +199,7 @@ function StatBadge({
   color: 'blue' | 'purple' | 'gray' | 'indigo' | 'amber' | 'red'
 }) {
   const colorMap = {
-    blue: 'bg-blue-500/15 text-blue-400',
+    blue: 'bg-brand-500/15 text-brand-400',
     purple: 'bg-purple-500/15 text-purple-400',
     gray: 'bg-gray-800 text-gray-300',
     indigo: 'bg-indigo-500/15 text-indigo-400',

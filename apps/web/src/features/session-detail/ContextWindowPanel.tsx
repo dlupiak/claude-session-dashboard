@@ -78,7 +78,7 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
           title={`System: ~${formatTokenCount(systemOverhead)}`}
         />
         <div
-          className="bg-blue-500"
+          className="bg-brand-500"
           style={{ width: `${messagesPct}%` }}
           title={`Messages: ~${formatTokenCount(messagesEstimate)}`}
         />
@@ -113,7 +113,7 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
           system
         </span>
         <span className="flex items-center gap-1">
-          <span className="inline-block h-2 w-2 rounded-sm bg-blue-500" />
+          <span className="inline-block h-2 w-2 rounded-sm bg-brand-500" />
           messages
         </span>
         <span className="flex items-center gap-1">
@@ -135,7 +135,7 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
           label="Messages"
           value={messagesEstimate}
           total={contextLimit}
-          color="bg-blue-500"
+          color="bg-brand-500"
           prefix="~"
         />
         <CategoryRow
@@ -160,8 +160,8 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
             <AreaChart data={chartData}>
               <defs>
                 <linearGradient id="contextGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
-                  <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.05} />
+                  <stop offset="0%" stopColor="#d97757" stopOpacity={0.3} />
+                  <stop offset="100%" stopColor="#d97757" stopOpacity={0.05} />
                 </linearGradient>
               </defs>
               <YAxis
@@ -170,8 +170,8 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
               />
               <Tooltip
                 contentStyle={{
-                  background: '#1f2937',
-                  border: '1px solid #374151',
+                  background: '#1c1c1a',
+                  border: '1px solid #3d3b36',
                   borderRadius: '8px',
                   fontSize: '11px',
                 }}
@@ -193,7 +193,7 @@ export function ContextWindowPanel({ contextWindow, tokens }: Props) {
               <Area
                 type="stepAfter"
                 dataKey="context"
-                stroke="#3b82f6"
+                stroke="#d97757"
                 fill="url(#contextGrad)"
                 strokeWidth={1.5}
                 dot={false}
@@ -268,7 +268,7 @@ function TokenBreakdown({ tokens }: { tokens: TokenUsage }) {
     tokens.cacheCreationInputTokens
 
   const items = [
-    { label: 'Input', value: tokens.inputTokens, color: 'bg-blue-400' },
+    { label: 'Input', value: tokens.inputTokens, color: 'bg-brand-400' },
     { label: 'Output', value: tokens.outputTokens, color: 'bg-emerald-400' },
     { label: 'Cache Read', value: tokens.cacheReadInputTokens, color: 'bg-amber-400' },
     { label: 'Cache Create', value: tokens.cacheCreationInputTokens, color: 'bg-purple-400' },
@@ -309,7 +309,7 @@ function TokenFallback({ tokens }: { tokens: TokenUsage }) {
     tokens.cacheCreationInputTokens
 
   const items = [
-    { label: 'Input', value: tokens.inputTokens, color: 'text-blue-400' },
+    { label: 'Input', value: tokens.inputTokens, color: 'text-brand-400' },
     { label: 'Output', value: tokens.outputTokens, color: 'text-emerald-400' },
     { label: 'Cache Read', value: tokens.cacheReadInputTokens, color: 'text-amber-400' },
     { label: 'Cache Create', value: tokens.cacheCreationInputTokens, color: 'text-purple-400' },

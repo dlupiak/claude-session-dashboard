@@ -17,7 +17,7 @@ export function TierSelector({ value, onChange }: TierSelectorProps) {
             onClick={() => onChange(tier.id)}
             className={`rounded-lg border px-3 py-2 text-left transition-colors ${
               isSelected
-                ? 'border-blue-500 bg-blue-500/10 text-white'
+                ? 'border-brand-500 bg-brand-500/10 text-white'
                 : 'border-gray-800 bg-gray-900/50 text-gray-400 hover:border-gray-700 hover:text-gray-300'
             }`}
           >
