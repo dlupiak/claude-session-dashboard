@@ -41,7 +41,7 @@ After getting answers, produce a design document that includes:
 4. File structure (new files to create, existing files to modify)
 5. Any risks or trade-offs
 
-Write the design to docs/designs/$ARGUMENTS.story-id.md
+Write the design to docs/designs/design-<story-id-lowercase-kebab>.md (e.g., docs/designs/design-analytics-gap.md)
 
 Return the full design as your response so it can be passed to the implementer."
 )
