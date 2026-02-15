@@ -127,6 +127,7 @@ export async function parseDetail(
   const agentProgressTokens = new Map<string, TokenUsage>()
   const agentProgressToolCalls = new Map<string, Record<string, number>>()
   const agentProgressModel = new Map<string, string>()
+  const agentIdByToolUseId = new Map<string, string>()
 
   // Map for linking TaskCreate tool_use_id to pending task
   const pendingTaskByToolUseId = new Map<string, TaskItem>()
@@ -148,6 +149,12 @@ export async function parseDetail(
     // Track agent progress messages
     if (msg.type === 'progress' && msg.parentToolUseID) {
       const parentId = msg.parentToolUseID
+
+      // Track the agentId from progress messages
+      const progressAgentId = msg.data?.agentId
+      if (progressAgentId && parentId) {
+        agentIdByToolUseId.set(parentId, progressAgentId)
+      }
 
       // Track the model used by each agent
       const progressModel = msg.data?.message?.message?.model
@@ -416,6 +423,24 @@ export async function parseDetail(
     }
   }
 
+  // Enrich agents with agentId and subagent skills
+  const subagentDir = filePath.replace(/\.jsonl$/, '')
+  await Promise.all(
+    agents.map(async (agent) => {
+      const agentId = agentIdByToolUseId.get(agent.toolUseId)
+      if (!agentId) return
+
+      agent.agentId = agentId
+      const subagentFilePath = `${subagentDir}/subagents/agent-${agentId}.jsonl`
+
+      try {
+        agent.skills = await parseSubagentSkills(subagentFilePath)
+      } catch {
+        // Subagent file does not exist or is not readable — skip
+      }
+    }),
+  )
+
   // Build context window data
   const modelName = modelsSet.size > 0 ? Array.from(modelsSet)[0] : 'unknown'
   const contextWindow = buildContextWindowData(
@@ -473,6 +498,41 @@ export async function readSessionMessages(
   }
 
   return { messages, total }
+}
+
+// --- Subagent skill parsing ---
+
+/**
+ * Lightweight single-pass parser that reads a subagent JSONL file
+ * and extracts only Skill tool_use blocks from assistant messages.
+ */
+async function parseSubagentSkills(
+  subagentFilePath: string,
+): Promise<SkillInvocation[]> {
+  const skills: SkillInvocation[] = []
+
+  const stream = fs.createReadStream(subagentFilePath, { encoding: 'utf-8' })
+  const rl = readline.createInterface({ input: stream, crlfDelay: Infinity })
+
+  for await (const line of rl) {
+    const msg = safeParse(line)
+    if (!msg || msg.type !== 'assistant' || !msg.message?.content) continue
+
+    for (const block of msg.message.content) {
+      if (block.type !== 'tool_use' || block.name !== 'Skill') continue
+      const inp = block.input as Record<string, unknown> | undefined
+      if (!inp?.skill) continue
+
+      skills.push({
+        skill: String(inp.skill),
+        args: inp.args ? String(inp.args) : null,
+        timestamp: msg.timestamp ?? '',
+        toolUseId: block.id ?? '',
+      })
+    }
+  }
+
+  return skills
 }
 
 // --- Context window helpers ---

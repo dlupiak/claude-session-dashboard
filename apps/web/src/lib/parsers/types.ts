@@ -58,6 +58,8 @@ export interface AgentInvocation {
   durationMs?: number
   model?: string
   toolCalls?: Record<string, number>
+  agentId?: string
+  skills?: SkillInvocation[]
 }
 
 export interface SkillInvocation {
@@ -214,6 +216,7 @@ export interface RawJsonlMessage {
   }
   data?: {
     type?: string
+    agentId?: string
     message?: {
       type?: string
       message?: {

@@ -16,6 +16,16 @@ export function AgentsSkillsPanel({
   // Cost calculation per agent (hooks must be called before any early returns)
   const { data: settings } = useQuery(settingsQuery)
 
+  // Build combined skills list: session-level + agent-level, sorted by timestamp
+  const allSkills = useMemo(() => {
+    return [
+      ...skills.map((s) => ({ ...s, source: null as string | null })),
+      ...agents.flatMap((a) =>
+        (a.skills ?? []).map((s) => ({ ...s, source: a.subagentType })),
+      ),
+    ].sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+  }, [skills, agents])
+
   const { agentCosts, totalAgentCost } = useMemo(() => {
     if (!settings) return { agentCosts: new Map<number, number>(), totalAgentCost: 0 }
 
@@ -56,9 +66,9 @@ export function AgentsSkillsPanel({
     0,
   )
 
-  // Count skills for summary
+  // Count skills for summary (combined)
   const skillCounts = new Map<string, number>()
-  for (const s of skills) {
+  for (const s of allSkills) {
     skillCounts.set(s.skill, (skillCounts.get(s.skill) ?? 0) + 1)
   }
   const sortedSkillCounts = [...skillCounts.entries()].sort(
@@ -76,8 +86,8 @@ export function AgentsSkillsPanel({
             {totalAgentCost > 0 && ` · ~${formatUSD(totalAgentCost)}`})
           </span>
         )}
-        {skills.length > 0 &&
-          `, ${skills.length} skill invocation${skills.length !== 1 ? 's' : ''}`}
+        {allSkills.length > 0 &&
+          `, ${allSkills.length} skill invocation${allSkills.length !== 1 ? 's' : ''}`}
       </p>
 
       {/* Agent type summary badges */}
@@ -135,61 +145,72 @@ export function AgentsSkillsPanel({
               a.totalTokens ?? computeAgentTokens(a)
             const agentCost = agentCosts.get(i)
             return (
-              <div
-                key={`a-${i}`}
-                className="flex items-start gap-2 rounded bg-gray-950/40 px-2 py-1.5"
-              >
-                <span className="shrink-0 rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-300">
-                  {a.subagentType}
-                </span>
-                {a.model && (
-                  <span className="shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
-                    {a.model.replace(/^claude-/, '').replace(/-\d{8}$/, '')}
+              <div key={`a-${i}`} className="space-y-1">
+                <div className="flex items-start gap-2 rounded bg-gray-950/40 px-2 py-1.5">
+                  <span className="shrink-0 rounded bg-indigo-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-300">
+                    {a.subagentType}
                   </span>
-                )}
-                <span className="min-w-0 flex-1 truncate text-xs text-gray-400">
-                  {a.description}
-                </span>
-                <div className="flex shrink-0 items-center gap-2">
-                  {tokenCount != null && tokenCount > 0 && (
-                    <span className="text-[10px] font-mono text-indigo-400/80">
-                      {formatTokenCount(tokenCount)}
+                  {a.model && (
+                    <span className="shrink-0 rounded bg-gray-800 px-1.5 py-0.5 text-[10px] font-mono text-gray-400">
+                      {a.model.replace(/^claude-/, '').replace(/-\d{8}$/, '')}
                     </span>
                   )}
-                  {agentCost != null && agentCost > 0 && (
-                    <span className="text-[10px] font-mono text-emerald-400/80">
-                      ~{formatUSD(agentCost)}
-                    </span>
-                  )}
-                  {a.totalToolUseCount != null && (
-                    <span className="text-[10px] text-gray-500">
-                      {a.totalToolUseCount} tools
-                    </span>
-                  )}
-                  {a.durationMs != null && (
-                    <span className="text-[10px] text-gray-600">
-                      {formatDuration(a.durationMs)}
-                    </span>
-                  )}
-                  {a.timestamp && (
-                    <span className="text-[10px] text-gray-600">
-                      {format(new Date(a.timestamp), 'HH:mm:ss')}
-                    </span>
-                  )}
+                  <span className="min-w-0 flex-1 truncate text-xs text-gray-400">
+                    {a.description}
+                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {tokenCount != null && tokenCount > 0 && (
+                      <span className="text-[10px] font-mono text-indigo-400/80">
+                        {formatTokenCount(tokenCount)}
+                      </span>
+                    )}
+                    {agentCost != null && agentCost > 0 && (
+                      <span className="text-[10px] font-mono text-emerald-400/80">
+                        ~{formatUSD(agentCost)}
+                      </span>
+                    )}
+                    {a.totalToolUseCount != null && (
+                      <span className="text-[10px] text-gray-500">
+                        {a.totalToolUseCount} tools
+                      </span>
+                    )}
+                    {a.durationMs != null && (
+                      <span className="text-[10px] text-gray-600">
+                        {formatDuration(a.durationMs)}
+                      </span>
+                    )}
+                    {a.timestamp && (
+                      <span className="text-[10px] text-gray-600">
+                        {format(new Date(a.timestamp), 'HH:mm:ss')}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                {a.skills && a.skills.length > 0 && (
+                  <div className="ml-6 flex flex-wrap gap-1">
+                    {a.skills.map((s, si) => (
+                      <span
+                        key={`as-${si}`}
+                        className="inline-flex items-center rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-mono text-amber-300"
+                      >
+                        /{s.skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })}
         </div>
       )}
 
-      {/* Skill detail rows */}
-      {skills.length > 0 && (
+      {/* Skill detail rows (combined session-level + agent-level) */}
+      {allSkills.length > 0 && (
         <div className="mt-3 space-y-1">
           <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
             Skill Invocations
           </p>
-          {skills.map((s, i) => (
+          {allSkills.map((s, i) => (
             <div
               key={`s-${i}`}
               className="flex items-start gap-2 rounded bg-gray-950/40 px-2 py-1.5"
@@ -197,6 +218,11 @@ export function AgentsSkillsPanel({
               <span className="shrink-0 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
                 /{s.skill}
               </span>
+              {s.source && (
+                <span className="shrink-0 text-[10px] text-gray-500">
+                  via {s.source}
+                </span>
+              )}
               {s.args && (
                 <span className="min-w-0 flex-1 truncate text-xs font-mono text-gray-500">
                   {s.args}
