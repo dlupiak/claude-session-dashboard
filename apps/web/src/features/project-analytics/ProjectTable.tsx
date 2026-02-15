@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Link } from '@tanstack/react-router'
 import { formatDuration, formatRelativeTime } from '@/lib/utils/format'
+import { usePrivacy } from '@/features/privacy/PrivacyContext'
 import type { ProjectAnalytics } from './project-analytics.server'
 
 type SortField = 'projectName' | 'totalSessions' | 'totalMessages' | 'totalDurationMs' | 'lastSessionAt'
@@ -19,6 +20,7 @@ const COLUMNS: { key: SortField; label: string; align?: 'right' }[] = [
 ]
 
 export function ProjectTable({ projects }: ProjectTableProps) {
+  const { anonymizeProjectName } = usePrivacy()
   const [sortField, setSortField] = useState<SortField>('lastSessionAt')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
 
@@ -93,7 +95,7 @@ export function ProjectTable({ projects }: ProjectTableProps) {
                   search={{ project: project.projectName }}
                   className="text-sm text-blue-400 hover:underline"
                 >
-                  {project.projectName}
+                  {anonymizeProjectName(project.projectName)}
                 </Link>
                 {project.activeSessions > 0 && (
                   <span className="ml-2 rounded-full bg-green-500/20 px-1.5 py-0.5 text-[10px] font-medium text-green-400">

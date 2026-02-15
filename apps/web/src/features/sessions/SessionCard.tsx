@@ -6,15 +6,14 @@ import { StatusBadge } from './StatusBadge'
 import { RunningTimer } from './RunningTimer'
 
 export function SessionCard({ session }: { session: SessionSummary }) {
-  const { privacyMode, anonymizePath, anonymizeProjectName } = usePrivacy()
+  const { privacyMode, anonymizePath, anonymizeProjectName, anonymizeBranch } = usePrivacy()
   const displayName = privacyMode
     ? anonymizeProjectName(session.projectName)
     : session.projectName
   const displayCwd = session.cwd
-    ? privacyMode
-      ? anonymizePath(session.cwd)
-      : session.cwd
+    ? anonymizePath(session.cwd, session.projectName)
     : null
+  const displayBranch = session.branch ? anonymizeBranch(session.branch) : null
 
   return (
     <Link
@@ -32,9 +31,9 @@ export function SessionCard({ session }: { session: SessionSummary }) {
             <StatusBadge isActive={session.isActive} />
           </div>
 
-          {session.branch && (
+          {displayBranch && (
             <p className="mt-1 truncate text-xs text-gray-500">
-              <span className="font-mono">{session.branch}</span>
+              <span className="font-mono">{displayBranch}</span>
             </p>
           )}
         </div>

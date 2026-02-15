@@ -1,6 +1,5 @@
 import { Link, useMatches } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
-import { PrivacyToggle } from '@/features/privacy/PrivacyToggle'
 import { ActiveSessionsBadge } from '@/features/sessions/ActiveSessionsBadge'
 
 const NAV_ITEMS = [
@@ -47,8 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
 
         <div className="border-t border-gray-800 p-3">
-          <PrivacyToggle />
-          <p className="mt-2 text-xs text-gray-600">Read-only observer</p>
+          <p className="text-xs text-gray-600">Read-only observer</p>
         </div>
       </aside>
 
