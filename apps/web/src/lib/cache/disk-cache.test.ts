@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import * as fs from 'node:fs'
 import * as path from 'node:path'
 import { z } from 'zod'
@@ -17,7 +17,7 @@ describe('disk-cache', () => {
       if (fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath)
-        } catch (error) {
+        } catch {
           // Ignore cleanup errors
         }
       }
@@ -31,7 +31,7 @@ describe('disk-cache', () => {
         if (file.includes('test-') || file.endsWith('.tmp')) {
           try {
             fs.unlinkSync(path.join(cacheDir, file))
-          } catch (error) {
+          } catch {
             // Ignore cleanup errors
           }
         }
@@ -76,7 +76,6 @@ describe('disk-cache', () => {
         fs.rmSync(cacheDir, { recursive: true })
       }
 
-      const schema = z.object({ value: z.number() })
       const data = { value: 42 }
       const cacheKey = 'test-cache-create-dir'
 
@@ -233,7 +232,7 @@ describe('disk-cache', () => {
 
           // Restore permissions for cleanup
           fs.chmodSync(cachePath, 0o644)
-        } catch (error) {
+        } catch {
           // Skip test if chmod is not supported (e.g., on Windows)
           // This is acceptable as the core functionality is tested elsewhere
           fs.chmodSync(cachePath, 0o644)
