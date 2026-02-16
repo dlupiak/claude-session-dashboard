@@ -1,8 +1,0 @@
-{
-  "packages": {
-    "apps/web": {
-      "release-type": "node",
-      "package-name": "claude-session-dashboard"
-    }
-  }
-}
