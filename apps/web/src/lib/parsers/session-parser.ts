@@ -642,13 +642,13 @@ async function parseSubagentDetail(
         model = msg.message.model
       }
 
-      // Accumulate token usage — only once per requestId
+      // Track last request's tokens (represents final context window size)
       if (isNewRequest && msg.message.usage) {
         const u = msg.message.usage
-        tokens.inputTokens += u.input_tokens ?? 0
-        tokens.outputTokens += u.output_tokens ?? 0
-        tokens.cacheReadInputTokens += u.cache_read_input_tokens ?? 0
-        tokens.cacheCreationInputTokens += u.cache_creation_input_tokens ?? 0
+        tokens.inputTokens = u.input_tokens ?? 0
+        tokens.outputTokens = u.output_tokens ?? 0
+        tokens.cacheReadInputTokens = u.cache_read_input_tokens ?? 0
+        tokens.cacheCreationInputTokens = u.cache_creation_input_tokens ?? 0
       }
 
       // Extract tool calls and skills from content blocks
